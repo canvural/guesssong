@@ -5,10 +5,18 @@ namespace App\Http\Controllers;
 use App\Services\Spotify;
 use Illuminate\View\View;
 
-class CategoryController extends Controller
+class HomeController extends Controller
 {
     /**
-     * Show the categories.
+     * Create a new controller instance.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+     * Show the home screen.
      *
      * @param Spotify $spotify
      *
@@ -16,7 +24,6 @@ class CategoryController extends Controller
      */
     public function index(Spotify $spotify): View
     {
-        dd(json_encode($spotify->getPlaylistCategoriesForGame(), JSON_UNESCAPED_SLASHES));
         $categories = collect(
             $spotify->getPlaylistCategoriesForGame()
         )
