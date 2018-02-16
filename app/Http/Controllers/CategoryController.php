@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Spotify;
+use App\Services\MusicService;
 use Illuminate\View\View;
 
 class CategoryController extends Controller
@@ -10,17 +10,16 @@ class CategoryController extends Controller
     /**
      * Show the home screen.
      *
-     * @param Spotify $spotify
+     * @param MusicService $spotify
      *
      * @return View
      */
-    public function index(Spotify $spotify): View
+    public function index(MusicService $spotify): View
     {
         $categories = collect(
             $spotify->getPlaylistCategoriesForGame()
         )
             ->shuffle()
-            ->take(10)
             ->toArray();
     
         return view('home')->with(compact('categories'));

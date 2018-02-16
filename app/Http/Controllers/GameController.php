@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Spotify;
+use App\Services\MusicService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class GameController extends Controller
@@ -15,11 +14,11 @@ class GameController extends Controller
      * Display a listing of the resource.
      *
      * @param string  $playlistName
-     * @param Spotify $spotify
+     * @param MusicService $spotify
      *
      * @return View|RedirectResponse
      */
-    public function index(string $playlistName, Spotify $spotify)
+    public function index(string $playlistName, MusicService $spotify)
     {
         $playlist = \Cache::get('playlist_'.$playlistName);
 

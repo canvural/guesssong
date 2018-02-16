@@ -5,7 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Collection;
 use SpotifyWebAPI\SpotifyWebAPI;
 
-class Spotify
+class Spotify implements MusicService
 {
     /**
      * @var SpotifyWebAPI

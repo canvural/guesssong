@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Spotify;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use App\Services\MusicService;
 use Illuminate\View\View;
 
 class PlaylistController extends Controller
@@ -13,11 +11,11 @@ class PlaylistController extends Controller
      * Display the specified resource.
      *
      * @param string  $category Spotify playlist id
-     * @param Spotify $spotify
+     * @param MusicService $spotify
      *
      * @return View
      */
-    public function show($category, Spotify $spotify): View
+    public function show($category, MusicService $spotify): View
     {
         $playlists = \Cache::remember($category, now()->addDay(), function () use ($category, $spotify) {
             return $spotify->getCategoryPlaylists($category);
