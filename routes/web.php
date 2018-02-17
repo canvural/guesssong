@@ -16,7 +16,7 @@ Auth::routes();
 Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider');
 Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback');
 
-Route::get('/', 'CategoryController@index')->name('categories.index');
+Route::get('/categories', 'CategoryController@index')->name('categories.index');
 
 Route::get('playlists/{category}', 'PlaylistController@show')->name('playlists.show');
 
