@@ -22,6 +22,6 @@ class User extends Authenticatable
 
     public function scores()
     {
-        return $this->hasMany(Score::class);
+        return $this->hasMany(Game::class);
     }
 }

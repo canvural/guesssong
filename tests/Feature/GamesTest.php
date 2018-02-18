@@ -123,7 +123,7 @@ class GamesTest extends TestCase
                 'current_song_url',
             ]);
 
-        $this->assertDatabaseHas('scores', [
+        $this->assertDatabaseHas('games', [
             'score' => 0,
             'user_id' => $user->id,
             'playlist_id' => $this->playlist['id'],
