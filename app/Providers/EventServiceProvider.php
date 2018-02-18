@@ -14,9 +14,7 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        UserAnsweredRight::class => [
-            UpdateScore::class,
-        ],
+        
     ];
 
     /**
