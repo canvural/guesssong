@@ -50,7 +50,7 @@
     import swal from 'sweetalert2';
 
     export default {
-      props: ['song_url', 'tracks', 'playlist_image', 'playlist_id'],
+      props: ['playlist_image', 'playlist_id'],
       data() {
         return {
           score: 0,
@@ -58,14 +58,14 @@
           message: null,
           resetTimer: false,
           gameInProgress: false,
-          currentTracks: this.tracks,
-          currentSongUrl: this.song_url,
+          currentTracks: null,
+          currentSongUrl: null,
         }
       },
       methods: {
         async startGame() {
           try {
-            await axios.post(window.location.href, {
+            var response = await axios.post(window.location.href, {
               playlist: this.playlist_id
             });
           } catch (e) {
@@ -78,10 +78,14 @@
             return;
           }
 
+          this.currentTracks = response.data.tracks;
+          this.currentSongUrl = response.data.current_song_url;
+
           this.gameInProgress = true;
 
           this.audio = this.$el.querySelectorAll('audio')[0];
 
+          this.audio.load();
           this.audio.play();
         },
         async checkAnswer(track) {

@@ -5,8 +5,6 @@
         <game
             playlist_image="{{ $playlistImage }}"
             playlist_id="{{ $playlistId }}"
-            song_url="{!! $current_song_url !!}"
-            :tracks='@json($tracks)'
         ></game>
     </div>
 @endsection
