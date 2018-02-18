@@ -65,8 +65,8 @@ class GameController extends Controller
         ]);
 
         \session()->push('recently_played_tracks', $answer['id']);
-    
-        \auth()->user()->scores()->create([
+        
+        $request->user()->scores()->create([
             'score' => 0,
             'playlist_id' => $playlistId
         ]);
