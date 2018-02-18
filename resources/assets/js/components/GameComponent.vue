@@ -46,81 +46,81 @@
 </template>
 
 <script>
-    import axios from 'axios';
-    import swal from 'sweetalert2';
+import axios from "axios";
+import swal from "sweetalert2";
 
-    export default {
-      props: ['playlist_image', 'playlist_id'],
-      data() {
-        return {
-          score: 0,
-          audio: null,
-          message: null,
-          resetTimer: false,
-          gameInProgress: false,
-          currentTracks: null,
-          currentSongUrl: null,
-        }
-      },
-      methods: {
-        async startGame() {
-          try {
-            var response = await axios.post(window.location.href, {
-              playlist: this.playlist_id
-            });
-          } catch (e) {
-            swal({
-              type: 'error',
-              title: 'Oops! Something went wrong.',
-              text: 'Can\'t start the game right now!'
-            });
+export default {
+  props: ["playlist_image", "playlist_id"],
+  data() {
+    return {
+      score: 0,
+      audio: null,
+      message: null,
+      resetTimer: false,
+      gameInProgress: false,
+      currentTracks: null,
+      currentSongUrl: null
+    };
+  },
+  methods: {
+    async startGame() {
+      try {
+        var response = await axios.post(window.location.href, {
+          playlist: this.playlist_id
+        });
+      } catch (e) {
+        swal({
+          type: "error",
+          title: "Oops! Something went wrong.",
+          text: "Can't start the game right now!"
+        });
 
-            return;
-          }
-
-          this.currentTracks = response.data.tracks;
-          this.currentSongUrl = response.data.current_song_url;
-
-          this.gameInProgress = true;
-
-          this.audio = this.$el.querySelectorAll('audio')[0];
-
-          this.audio.load();
-          this.audio.play();
-        },
-        async checkAnswer(track) {
-          this.audio.pause();
-          this.gameInProgress = false;
-          this.resetTimer = true;
-
-          const response = await axios.post(`${window.location.href}/answer`, {
-            answer: track.id
-          });
-
-          if (response.data.message === 'finished') {
-            swal({
-              type: 'success',
-              title: 'Good Job!',
-              text: `You scored ${this.score} points! Now play another one!`,
-              allowOutsideClick: false,
-            }).then(result => {
-              window.location.replace ('/');
-            });
-
-            return;
-          }
-
-          this.score = response.data.score;
-          this.message = response.data.message;
-          this.currentTracks = response.data.tracks;
-          this.currentSongUrl = response.data.current_song_url;
-
-          this.gameInProgress = true;
-          this.resetTimer = false;
-
-          this.audio.load();
-          this.audio.play();
-        }
+        return;
       }
+
+      this.currentTracks = response.data.tracks;
+      this.currentSongUrl = response.data.current_song_url;
+
+      this.gameInProgress = true;
+
+      this.audio = this.$el.querySelectorAll("audio")[0];
+
+      this.audio.load();
+      this.audio.play();
+    },
+    async checkAnswer(track) {
+      this.audio.pause();
+      this.gameInProgress = false;
+      this.resetTimer = true;
+
+      const response = await axios.post(`${window.location.href}/answer`, {
+        answer: track.id
+      });
+
+      if (response.data.message === "finished") {
+        swal({
+          type: "success",
+          title: "Good Job!",
+          text: `You scored ${this.score} points! Now play another one!`,
+          allowOutsideClick: false
+        }).then(result => {
+          window.location.replace("/");
+        });
+
+        return;
+      }
+
+      this.score = response.data.score;
+      this.message = response.data.message;
+      this.currentTracks = response.data.tracks;
+      this.currentSongUrl = response.data.current_song_url;
+
+      this.gameInProgress = true;
+      this.resetTimer = false;
+
+      this.audio.load();
+      this.audio.play();
     }
+  }
+};
 </script>

@@ -13,58 +13,57 @@
 </template>
 
 <script>
-  import Progress from './CircularProgress'
+import Progress from "./CircularProgress";
 
-  export default {
-    components: {
-      'circular-countdown': Progress,
+export default {
+  components: {
+    "circular-countdown": Progress
+  },
+  props: ["totalPercentage", "start", "reset"],
+  data() {
+    return {
+      interval: null,
+      percentage: 0
+    };
+  },
+  computed: {
+    remaining() {
+      return Math.abs(this.totalPercentage - this.percentage);
     },
-    props: ['totalPercentage', 'start', 'reset'],
-    data(){
-      return {
-        interval: null,
-        percentage: 0,
+    finished() {
+      return this.percentage >= this.totalPercentage;
+    }
+  },
+  watch: {
+    start(val) {
+      if (val) {
+        this.startCountdown();
       }
     },
-    computed: {
-      remaining () {
-        return Math.abs(this.totalPercentage - this.percentage)
-      },
-      finished () {
-        return this.percentage >= this.totalPercentage;
-      },
-    },
-    watch: {
-      start (val) {
-        if (val) {
-          this.startCountdown()
-        }
-      },
-      reset (val) {
-        if (val) {
-          this.percentage = 0;
+    reset(val) {
+      if (val) {
+        this.percentage = 0;
 
-          clearInterval(this.interval)
-        }
-      },
-      percentage (val) {
-        if (val >= this.totalPercentage) this.$emit('finished');
+        clearInterval(this.interval);
       }
     },
-    methods:{
-      startCountdown () {
-        this.refreshEverySecond();
-      },
-      refreshEverySecond() {
-        this.percentage++;
+    percentage(val) {
+      if (val >= this.totalPercentage) this.$emit("finished");
+    }
+  },
+  methods: {
+    startCountdown() {
+      this.refreshEverySecond();
+    },
+    refreshEverySecond() {
+      this.percentage++;
 
-        this.interval = setInterval(() => {
-          if (this.start)
-            this.percentage++
-        }, 1000);
+      this.interval = setInterval(() => {
+        if (this.start) this.percentage++;
+      }, 1000);
 
-        this.$on('finished', () => clearInterval(this.interval));
-      }
+      this.$on("finished", () => clearInterval(this.interval));
     }
   }
+};
 </script>
