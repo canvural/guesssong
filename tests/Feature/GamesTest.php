@@ -32,7 +32,9 @@ class GamesTest extends TestCase
     {
         $response = $this->get(\route('games.index', 'rock-hard'));
 
-        $response->assertRedirect('/login');
+        $response
+            ->assertRedirect('/login')
+            ->assertSessionMissing('current_playlist');
     }
 
     /** @test */
@@ -47,7 +49,9 @@ class GamesTest extends TestCase
 
         $response = $this->get(\route('games.index', 'rock-hard'));
 
-        $response->assertStatus(200);
+        $response
+            ->assertStatus(200)
+            ->assertSessionHas('current_playlist', $this->playlist['id']);
     }
 
     /** @test */
