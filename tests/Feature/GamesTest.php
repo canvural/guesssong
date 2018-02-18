@@ -23,7 +23,7 @@ class GamesTest extends TestCase
     }
     
     /** @test */
-    function guests_can_not_start_a_game()
+    function guests_can_not_play_a_game()
     {
         $response = $this->get(\route('games.index', 'rock-hard'));
     
@@ -31,22 +31,16 @@ class GamesTest extends TestCase
     }
     
     /** @test */
-    function logged_in_users_can_start_game()
+    function logged_in_users_can_play_game()
     {
-        $this->actingAs(\factory(User::class)->create());
+        $this->actingAs(\create(User::class));
         
         $playlist = \get_playlist('rock-hard');
-        $playlistTracks = \get_fake_data($playlist['id'] . '_tracks.json');
-    
+        
         Cache::shouldReceive('get')
             ->once()
             ->with('playlist_rock-hard')
             ->andReturn($playlist);
-    
-        Cache::shouldReceive('remember')
-            ->once()
-            ->withAnyArgs()
-            ->andReturn($playlistTracks);
     
         $response = $this->get(\route('games.index', 'rock-hard'));
         
@@ -61,5 +55,22 @@ class GamesTest extends TestCase
         $response = $this->get(\route('games.index', 'rock-hard'));
         
         $response->assertStatus(404);
+    }
+    
+    /** @test */
+    function current_game_playlist_is_stored_in_session()
+    {
+        $this->actingAs(\create(User::class));
+    
+        $playlist = \get_playlist('rock-hard');
+    
+        Cache::shouldReceive('get')
+            ->once()
+            ->with('playlist_rock-hard')
+            ->andReturn($playlist);
+    
+        $response = $this->get(\route('games.index', 'rock-hard'));
+    
+        $response->assertSessionHas('current_playlist', $playlist['id']);
     }
 }
