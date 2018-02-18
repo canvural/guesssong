@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Events\UserAnsweredRight;
+use App\Services\MusicService;
 use Illuminate\Http\Request;
 
 class GameAnswerController extends Controller
 {
-    public function create(Request $request, string $playlistName)
+    public function create(Request $request, string $playlistName, MusicService $spotify)
     {
         $playlist = \Cache::get('playlist_'.$playlistName);
         $tracks = \Cache::get($playlist['id'].'_tracks');
@@ -17,10 +18,10 @@ class GameAnswerController extends Controller
         if (session('answer') === $request->input('answer')) {
             $message = 'Correct!';
 
-            \event(new UserAnsweredRight(auth()->user(), $playlist));
+            \event(new UserAnsweredRight($request->user(), $playlist));
         }
 
-        $tracks = filter_tracks($tracks['items'], \session('recently_played_tracks'));
+        $tracks = $spotify->filterTracks($tracks['items'], \session('recently_played_tracks'));
 
         if ($tracks->isEmpty()) {
             \session()->forget([
@@ -35,7 +36,7 @@ class GameAnswerController extends Controller
             ]);
         }
 
-        $answer = $tracks->random(1)->first();
+        $answer = $tracks->random();
 
         \session([
             'answer' => $answer['id'],
@@ -48,7 +49,7 @@ class GameAnswerController extends Controller
         return \response()->json([
             'message' => $message,
             'tracks' => $tracks->toArray(),
-            'score' => \auth()->user()->scores()->select('score')->where('playlist_id', '=', $playlist['id'])->latest()->first()->score,
+            'score' => $request->user()->scores()->select('score')->where('playlist_id', '=', $playlist['id'])->latest()->first()->score,
             'current_song_url' => $answer['preview_url'],
         ]);
     }
