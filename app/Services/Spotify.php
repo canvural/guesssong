@@ -39,22 +39,6 @@ class Spotify implements MusicService
         ])['categories']['items'];
     }
 
-    public function getTracksForGame(): Collection
-    {
-        $playlist = collect($this->api->getCategoryPlaylists('toplists')['playlists']['items'])
-                    ->shuffle()
-                    ->first();
-
-        dd($playlist);
-
-        return collect($this->api->getUserPlaylistTracks($playlist['owner']['id'], $playlist['id'])['items'])
-            ->reject(function ($track) {
-                return null === $track['track']['preview_url'];
-            })
-            ->shuffle()
-            ->take(4);
-    }
-
     /**
      * @param string $category Spotify category id
      *
