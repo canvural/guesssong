@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0d5742e740ade21a71904b342fc14ae9",
+    "content-hash": "0b6a9cfd5312c37d65478b15631b875c",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -3292,26 +3292,27 @@
         },
         {
             "name": "nunomaduro/collision",
-            "version": "v1.1.22",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nunomaduro/collision.git",
-                "reference": "236609bd5a067587f600bc55c5d683b840798b22"
+                "reference": "4e310ef9384f53ee8dda8736afb3cbaf320753a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nunomaduro/collision/zipball/236609bd5a067587f600bc55c5d683b840798b22",
-                "reference": "236609bd5a067587f600bc55c5d683b840798b22",
+                "url": "https://api.github.com/repos/nunomaduro/collision/zipball/4e310ef9384f53ee8dda8736afb3cbaf320753a0",
+                "reference": "4e310ef9384f53ee8dda8736afb3cbaf320753a0",
                 "shasum": ""
             },
             "require": {
                 "filp/whoops": "^2.1.4",
+                "jakub-onderka/php-console-highlighter": "0.3.*",
                 "php": "^7.1",
                 "symfony/console": "~2.8|~3.3|~4.0"
             },
             "require-dev": {
-                "laravel/framework": "5.5.*",
-                "phpunit/phpunit": "~6.5"
+                "laravel/framework": "5.6.*",
+                "phpunit/phpunit": "~7.0"
             },
             "type": "library",
             "extra": {
@@ -3349,7 +3350,7 @@
                 "php",
                 "symfony"
             ],
-            "time": "2018-02-07T10:42:20+00:00"
+            "time": "2018-02-18T12:29:27+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -3999,16 +4000,16 @@
         },
         {
             "name": "phpunit/phpunit-mock-objects",
-            "version": "6.0.0",
+            "version": "6.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit-mock-objects.git",
-                "reference": "e495e5d3660321b62c294d8c0e954d02d6ce2573"
+                "reference": "e3249dedc2d99259ccae6affbc2684eac37c2e53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/e495e5d3660321b62c294d8c0e954d02d6ce2573",
-                "reference": "e495e5d3660321b62c294d8c0e954d02d6ce2573",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/e3249dedc2d99259ccae6affbc2684eac37c2e53",
+                "reference": "e3249dedc2d99259ccae6affbc2684eac37c2e53",
                 "shasum": ""
             },
             "require": {
@@ -4051,7 +4052,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2018-02-01T13:11:13+00:00"
+            "time": "2018-02-15T05:27:38+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -4674,16 +4675,16 @@
         },
         {
             "name": "symfony/thanks",
-            "version": "v1.0.5",
+            "version": "v1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/thanks.git",
-                "reference": "c757ee0c9dcfcc0e9e30fbbbdcadeb9dcc9aaaf4"
+                "reference": "9474ce305253c2f0bc20322ff8e9973cf25c9a94"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/thanks/zipball/c757ee0c9dcfcc0e9e30fbbbdcadeb9dcc9aaaf4",
-                "reference": "c757ee0c9dcfcc0e9e30fbbbdcadeb9dcc9aaaf4",
+                "url": "https://api.github.com/repos/symfony/thanks/zipball/9474ce305253c2f0bc20322ff8e9973cf25c9a94",
+                "reference": "9474ce305253c2f0bc20322ff8e9973cf25c9a94",
                 "shasum": ""
             },
             "require": {
@@ -4713,7 +4714,7 @@
                 }
             ],
             "description": "Give thanks (in the form of a GitHub ⭐) to your fellow PHP package maintainers (not limited to Symfony components)!",
-            "time": "2018-01-26T10:44:34+00:00"
+            "time": "2018-02-02T13:47:40+00:00"
         },
         {
             "name": "theseer/tokenizer",
