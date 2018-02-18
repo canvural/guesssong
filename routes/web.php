@@ -22,6 +22,6 @@ Route::get('playlists/{category}', 'PlaylistController@show')->name('playlists.s
 
 Route::middleware(['auth'])->group(function () {
     Route::get('game/{playlistName}', 'GameController@index')->name('games.index');
-    Route::post('game/{playlistName}', 'GameController@store')->name('games.strore');
+    Route::post('game/{playlistName}', 'GameController@store')->name('games.store');
     Route::post('game/{playlistName}/answer', 'GameAnswerController@create')->name('gameAnswers.create');
 });
