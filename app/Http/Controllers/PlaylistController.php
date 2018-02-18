@@ -10,7 +10,7 @@ class PlaylistController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param string  $category Spotify playlist id
+     * @param string       $category Spotify playlist id
      * @param MusicService $spotify
      *
      * @return View
@@ -22,7 +22,7 @@ class PlaylistController extends Controller
         });
 
         collect($playlists)->each(function ($playlist) {
-            \Cache::add('playlist_' . str_slug($playlist['name']), $playlist, now()->addDay());
+            \Cache::add('playlist_'.str_slug($playlist['name']), $playlist, now()->addDay());
         });
 
         return view('playlists.show')->with(compact('playlists'));

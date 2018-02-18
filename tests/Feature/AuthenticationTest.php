@@ -11,7 +11,7 @@ use Tests\TestCase;
 class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
-    
+
     /** @test */
     public function guests_can_register_an_account()
     {
@@ -30,7 +30,7 @@ class AuthenticationTest extends TestCase
             $this->assertTrue(Hash::check('secret', $user->password));
         });
     }
-    
+
     /** @test */
     public function email_is_required()
     {
@@ -44,7 +44,7 @@ class AuthenticationTest extends TestCase
         $this->assertFalse(Auth::check());
         $this->assertCount(0, User::all());
     }
-    
+
     /** @test */
     public function email_is_valid()
     {
@@ -58,26 +58,26 @@ class AuthenticationTest extends TestCase
         $this->assertFalse(Auth::check());
         $this->assertCount(0, User::all());
     }
-    
+
     /** @test */
     public function email_cannot_exceed_255_chars()
     {
         $this->withExceptionHandling();
         $this->from(route('register'));
         $response = $this->post(route('register'), $this->validParams([
-            'email' => substr(str_repeat('a', 256) . '@example.com', -256),
+            'email' => substr(str_repeat('a', 256).'@example.com', -256),
         ]));
         $response->assertRedirect(route('register'));
         $response->assertSessionHasErrors('email');
         $this->assertFalse(Auth::check());
         $this->assertCount(0, User::all());
     }
-    
+
     /** @test */
     public function email_is_unique()
     {
         \factory(User::class)->create(['email' => 'johndoe@example.com']);
-        
+
         $this->withExceptionHandling();
         $this->from(route('register'));
         $response = $this->post(route('register'), $this->validParams([
@@ -88,7 +88,7 @@ class AuthenticationTest extends TestCase
         $this->assertFalse(Auth::check());
         $this->assertCount(1, User::all());
     }
-    
+
     /** @test */
     public function password_is_required()
     {
@@ -102,7 +102,7 @@ class AuthenticationTest extends TestCase
         $this->assertFalse(Auth::check());
         $this->assertCount(0, User::all());
     }
-    
+
     /** @test */
     public function password_must_be_confirmed()
     {
@@ -110,14 +110,14 @@ class AuthenticationTest extends TestCase
         $this->from(route('register'));
         $response = $this->post(route('register'), $this->validParams([
             'password' => 'foo',
-            'password_confirmation' => 'bar'
+            'password_confirmation' => 'bar',
         ]));
         $response->assertRedirect(route('register'));
         $response->assertSessionHasErrors('password');
         $this->assertFalse(Auth::check());
         $this->assertCount(0, User::all());
     }
-    
+
     /** @test */
     public function password_must_be_6_chars()
     {
@@ -132,7 +132,7 @@ class AuthenticationTest extends TestCase
         $this->assertFalse(Auth::check());
         $this->assertCount(0, User::all());
     }
-    
+
     private function validParams($overrides = [])
     {
         return array_merge([

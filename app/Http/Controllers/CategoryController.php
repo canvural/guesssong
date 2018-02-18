@@ -21,7 +21,7 @@ class CategoryController extends Controller
         )
             ->shuffle()
             ->toArray();
-    
+
         return view('home')->with(compact('categories'));
     }
 }

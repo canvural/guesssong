@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Events\UserAnsweredRight;
-use App\Services\Spotify;
 use Illuminate\Http\Request;
 
 class GameAnswerController extends Controller
@@ -11,18 +10,18 @@ class GameAnswerController extends Controller
     public function create(Request $request, string $playlistName)
     {
         $playlist = \Cache::get('playlist_'.$playlistName);
-        $tracks   = \Cache::get($playlist['id'].'_tracks');
-        
+        $tracks = \Cache::get($playlist['id'].'_tracks');
+
         $message = 'Not correct!';
 
         if (session('answer') === $request->input('answer')) {
             $message = 'Correct!';
-            
+
             \event(new UserAnsweredRight(auth()->user(), $playlist));
         }
-    
+
         $tracks = filter_tracks($tracks['items'], \session('recently_played_tracks'));
-    
+
         if ($tracks->isEmpty()) {
             \session()->forget([
                 'answer',
@@ -30,22 +29,22 @@ class GameAnswerController extends Controller
                 'last_game_answer_time',
                 'recently_played_tracks',
             ]);
-    
+
             return \response()->json([
-                'message' => 'finished'
+                'message' => 'finished',
             ]);
         }
-    
+
         $answer = $tracks->random(1)->first();
-    
+
         \session([
             'answer' => $answer['id'],
             'current_playlist' => $playlist['id'],
-            'last_game_answer_time' => \now()->timestamp
+            'last_game_answer_time' => \now()->timestamp,
         ]);
-    
+
         \session()->push('recently_played_tracks', $answer['id']);
-    
+
         return \response()->json([
             'message' => $message,
             'tracks' => $tracks->toArray(),

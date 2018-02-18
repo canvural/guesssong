@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Collection;
 use SpotifyWebAPI\SpotifyWebAPI;
 
 class Spotify implements MusicService
@@ -58,10 +57,11 @@ class Spotify implements MusicService
     {
         return $this->api->getUserPlaylistTracks($playlist['owner']['id'], $playlist['id']);
     }
-    
+
     /**
      * @param array $tracks
      * @param array $recentlyPlayedTracks
+     *
      * @return \Illuminate\Support\Collection
      */
     public function filterTracks(array $tracks, array $recentlyPlayedTracks)

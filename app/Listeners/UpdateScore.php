@@ -9,16 +9,15 @@ class UpdateScore
     /**
      * Handle the event.
      *
-     * @param  UserAnsweredRight  $event
-     * @return void
+     * @param UserAnsweredRight $event
      */
     public function handle(UserAnsweredRight $event): void
     {
         $now = \now()->timestamp;
         $lastAnswerTime = \session('last_game_answer_time');
-    
+
         $score = (30 - ($now - $lastAnswerTime)) * 5;
-        
+
         $event
             ->user
             ->scores()

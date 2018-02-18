@@ -19,7 +19,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
-    
+
     public function scores()
     {
         return $this->hasMany(Score::class);
