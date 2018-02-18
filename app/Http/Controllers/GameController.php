@@ -66,7 +66,7 @@ class GameController extends Controller
 
         \session()->push('recently_played_tracks', $answer['id']);
 
-        $request->user()->scores()->create([
+        $request->user()->games()->create([
             'score' => 0,
             'playlist_id' => $playlistId,
         ]);
@@ -75,17 +75,5 @@ class GameController extends Controller
             'tracks' => $tracks->toArray(),
             'current_song_url' => $answer['preview_url'],
         ], 200);
-    }
-
-    /**
-     * @param string $playlistName
-     * @param string $playlist
-     *
-     * @return bool
-     */
-    private function checkValidPlaylist(string $playlistName, string $playlist): bool
-    {
-        return \session('current_playlist') === $playlist &&
-            \Cache::has('playlist_'.$playlistName);
     }
 }

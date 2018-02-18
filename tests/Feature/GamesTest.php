@@ -6,7 +6,6 @@ use App\Services\MusicService;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
 use Tests\Fakes\SpotifyFake;
 use Tests\TestCase;
 
@@ -42,12 +41,9 @@ class GamesTest extends TestCase
     {
         $this->actingAs(\create(User::class));
 
-        Cache::shouldReceive('get')
-            ->once()
-            ->with('playlist_rock-hard')
-            ->andReturn($this->playlist);
-
-        $response = $this->get(\route('games.index', 'rock-hard'));
+        $response = $this
+            ->withPlaylistCache($this->playlist)
+            ->get(\route('games.index', 'rock-hard'));
 
         $response
             ->assertStatus(200)
@@ -69,12 +65,9 @@ class GamesTest extends TestCase
     {
         $this->actingAs(\create(User::class));
 
-        Cache::shouldReceive('get')
-            ->once()
-            ->with('playlist_rock-hard')
-            ->andReturn($this->playlist);
-
-        $response = $this->get(\route('games.index', 'rock-hard'));
+        $response = $this
+            ->withPlaylistCache($this->playlist)
+            ->get(\route('games.index', 'rock-hard'));
 
         $response->assertSessionHas('current_playlist', $this->playlist['id']);
     }
@@ -82,35 +75,24 @@ class GamesTest extends TestCase
     /** @test */
     public function a_user_can_start_a_game()
     {
-        // Setup Carbon for testing
-        $now = Carbon::create(2018, 1, 1);
-        Carbon::setTestNow($now);
+        $now = $this->setCarbonTest();
 
         $user = \create(User::class);
 
         $this->actingAs($user);
 
-        Cache::shouldReceive('get')
-            ->once()
-            ->with('playlist_rock-hard')
-            ->andReturn($this->playlist);
-
-        Cache::shouldReceive('has')
-            ->once()
-            ->with('playlist_rock-hard')
-            ->andReturnTrue();
-
-        Cache::shouldReceive('remember')
-            ->once()
-            ->withAnyArgs()
-            ->andReturn($this->tracks);
-
-        $response = $this->withoutExceptionHandling()->withSession([
-            'current_playlist' => $this->playlist['id'],
-            'recently_played_tracks' => [],
-        ])->post(\route('games.store', 'rock-hard'), [
-            'playlist' => $this->playlist['id'],
-        ]);
+        $response = $this
+            ->withoutExceptionHandling()
+            ->withSession([
+                'current_playlist' => $this->playlist['id'],
+                'recently_played_tracks' => [],
+            ])
+            ->withPlaylistCache($this->playlist)
+            ->withPlaylistCacheExistence($this->playlist)
+            ->withPlaylistTracksCacheRemember($this->tracks)
+            ->post(\route('games.store', 'rock-hard'), [
+                'playlist' => $this->playlist['id'],
+            ]);
 
         $response
             ->assertStatus(200)

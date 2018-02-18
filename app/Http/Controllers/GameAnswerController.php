@@ -10,7 +10,13 @@ class GameAnswerController extends Controller
 {
     public function create(Request $request, string $playlistName, MusicService $spotify)
     {
+        $playlistId = $request->input('playlist');
         $playlist = \Cache::get('playlist_'.$playlistName);
+    
+        if (! $this->checkValidPlaylist($playlistName, $playlistId)) {
+            return \response()->json([], 404);
+        }
+        
         $tracks = \Cache::get($playlist['id'].'_tracks');
 
         $message = 'Not correct!';
@@ -18,7 +24,7 @@ class GameAnswerController extends Controller
         if (session('answer') === $request->input('answer')) {
             $message = 'Correct!';
 
-            \event(new UserAnsweredRight($request->user(), $playlist));
+            $request->user()->addScoreForGame($playlist['id'], \session('last_game_answer_time'));
         }
 
         $tracks = $spotify->filterTracks($tracks['items'], \session('recently_played_tracks'));
@@ -49,7 +55,7 @@ class GameAnswerController extends Controller
         return \response()->json([
             'message' => $message,
             'tracks' => $tracks->toArray(),
-            'score' => $request->user()->scores()->select('score')->where('playlist_id', '=', $playlist['id'])->latest()->first()->score,
+            'score' => $request->user()->games()->lastGameWithPlaylistId($playlist['id'])->select('score')->first()->score,
             'current_song_url' => $answer['preview_url'],
         ]);
     }

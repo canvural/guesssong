@@ -1,0 +1,125 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Game;
+use App\Services\MusicService;
+use App\User;
+use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Fakes\SpotifyFake;
+use Tests\TestCase;
+
+class GameAnswerTest extends TestCase
+{
+    use RefreshDatabase;
+    
+    private $playlist;
+    private $tracks;
+    
+    public function setUp()
+    {
+        parent::setUp();
+        
+        $this->app->bind(MusicService::class, SpotifyFake::class);
+        
+        $this->playlist = \get_playlist('rock-hard');
+        $this->tracks = \get_fake_data($this->playlist['id'].'_tracks.json');
+    }
+    
+    /** @test */
+    function guests_can_not_answer_a_game()
+    {
+        $response = $this
+            ->post(\route('gameAnswers.create', 'rock-hard'), [
+                'answer' => 'an-answer'
+            ]);
+        
+        $response->assertRedirect(\route('login'));
+    }
+    
+    /** @test */
+    public function answering_a_game_with_different_playlist_than_the_one_in_session_will_fail()
+    {
+        $this->actingAs(\create(User::class));
+    
+        $response = $this->withoutExceptionHandling()->withSession([
+            'answer' => 'correct-answer',
+            'current_playlist' => $this->playlist['id'],
+        ])->post(\route('gameAnswers.create', 'rock-hard'), [
+            'answer' => 'an-answer',
+            'playlist' => 'random-playlist'
+        ]);
+        
+        $response->assertStatus(404);
+    }
+    
+    /** @test */
+    function users_score_will_not_change_when_given_incorrect_answer()
+    {
+        /** @var User $user */
+        $user = \create(User::class);
+        
+        /** @var Game $usersGame */
+        $usersGame = \create(Game::class, [
+            'user_id' => $user->id,
+            'score' => 0,
+            'playlist_id' => $this->playlist['id']
+        ]);
+        
+        $this
+            ->withoutExceptionHandling()
+            ->actingAs($user)
+            ->withSession([
+                'answer' => 'correct-answer',
+                'recently_played_tracks' => [],
+                'current_playlist' => $this->playlist['id'],
+            ])
+            ->withPlaylistCache($this->playlist)
+            ->withPlaylistCacheExistence($this->playlist)
+            ->withPlaylistTracksCache($this->playlist, $this->tracks)
+            ->post(\route('gameAnswers.create', 'rock-hard'), [
+                'answer' => 'incorrect-answer',
+                'playlist' => $this->playlist['id']
+            ]);
+    
+        $this->assertSame($usersGame->score, (int) $usersGame->fresh()->score);
+    }
+    
+    /** @test */
+    function user_should_gain_score_when_answered_right()
+    {
+        $now = $this->setCarbonTest();
+        
+        /** @var User $user */
+        $user = \create(User::class);
+    
+        /** @var Game $usersGame */
+        $usersGame = \create(Game::class, [
+            'user_id' => $user->id,
+            'score' => 0,
+            'playlist_id' => $this->playlist['id']
+        ]);
+    
+        $this
+            ->withoutExceptionHandling()
+            ->actingAs($user)
+            ->withSession([
+                'answer' => 'correct-answer',
+                'recently_played_tracks' => [],
+                'last_game_answer_time' => $now->timestamp,
+                'current_playlist' => $this->playlist['id'],
+            ])
+            ->withPlaylistCache($this->playlist)
+            ->withPlaylistCacheExistence($this->playlist)
+            ->withPlaylistTracksCache($this->playlist, $this->tracks)
+            ->progressTime(0, 5)
+            ->post(\route('gameAnswers.create', 'rock-hard'), [
+                'answer' => 'correct-answer',
+                'playlist' => $this->playlist['id']
+            ]);
+    
+        // Guessed in 5 seconds hence 125 points
+        $this->assertEquals(125, $usersGame->fresh()->score);
+    }
+}
