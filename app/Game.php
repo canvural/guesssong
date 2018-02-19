@@ -24,6 +24,6 @@ class Game extends Model
      */
     public function scopeLastGameWithPlaylistId(Builder $query, string $playlistId): Builder
     {
-        return $query->where('playlist_id', '=', $playlistId)->latest();
+        return $query->where('playlist_id', '=', $playlistId)->latest()->limit(1);
     }
 }
