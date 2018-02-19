@@ -29,13 +29,18 @@ class User extends Authenticatable
     public function addScoreForGame(string $playlistId, $lastAnswerTime): self
     {
         $now = \now()->timestamp;
-    
-        $score = (30 - ($now - $lastAnswerTime)) * 5;
+        $timeDiff = $now - $lastAnswerTime;
+        
+        // Timeout
+        if ($timeDiff > 30) {
+            return $this;
+        }
+        
+        $score = (30 - $timeDiff) * 5;
     
         $this
             ->games()
             ->lastGameWithPlaylistId($playlistId)
-            ->limit(1)
             ->increment('score', $score);
         
         return $this;
