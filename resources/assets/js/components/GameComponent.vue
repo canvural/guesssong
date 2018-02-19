@@ -94,7 +94,8 @@ export default {
       this.resetTimer = true;
 
       const response = await axios.post(`${window.location.href}/answer`, {
-        answer: track.id
+        answer: track.id,
+        playlist: this.playlist_id
       });
 
       if (response.data.message === "finished") {
