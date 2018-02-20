@@ -2,7 +2,7 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
-Vue.component('countdown-timer', require('./components/ProgressComponent'));
+Vue.component('countdown-timer', require('./components/GameTimer'));
 
 import Flash from './components/Flash';
 import Game from './components/GameComponent';

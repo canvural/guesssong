@@ -1,3 +1,6 @@
+@import "components/circularCountdown.css";
+
+
 @tailwind preflight;
 
 a:active, a:focus {

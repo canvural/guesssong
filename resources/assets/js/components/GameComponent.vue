@@ -18,7 +18,7 @@
             </div>
 
             <countdown-timer
-                    :total-percentage="30"
+                    :data-total-percentage="30"
                     :start="gameInProgress"
                     :reset="resetTimer"
             >
