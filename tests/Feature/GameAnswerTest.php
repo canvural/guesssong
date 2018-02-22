@@ -142,7 +142,7 @@ class GameAnswerTest extends TestCase
                 'playlist' => $this->playlist['id']
             ]);
     
-        $this->assertEquals(0, $usersGame->fresh()->score);
+        $this->assertEquals($usersGame->score, $usersGame->fresh()->score);
     }
     
     /**
