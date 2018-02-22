@@ -7,12 +7,14 @@ import sinon from 'sinon';
 import Game from '../../resources/assets/js/components/GameComponent';
 
 describe ('Game', () => {
-  let wrapper, swalStub, assignStub;
+  let wrapper, clock, swalStub, assignStub;
 
   beforeEach (() => {
     wrapper = mount(Game, {
 
     });
+
+    clock = sinon.useFakeTimers();
 
     swalStub = sinon.stub(swal, 'default').resolves(true);
     // assignStub = sinon.stub(window.location, 'assign');
@@ -22,6 +24,8 @@ describe ('Game', () => {
 
   afterEach(function () {
     moxios.uninstall();
+
+    clock.restore();
 
     swalStub.restore(swal);
     // assignStub.restore(window.location.assign);
@@ -128,6 +132,40 @@ describe ('Game', () => {
       }).then(() => {
         see('Total Score: 10');
         see('Correct');
+
+        done()
+      })
+    })
+  });
+
+  it.only ('automatically submits an empty answer when timer is finished', done => {
+    wrapper.setData({
+      audio: document.createElement('audio'),
+      gameInProgress: true,
+      currentTracks: [
+        {name: 'Track', artists: [{name: 'Artist'}]},
+        {name: 'Track2', artists: [{name: 'Artist2'}]},
+      ]
+    });
+
+    see('Total Score: 0');
+
+    clock.tick(31000);
+
+    wrapper.update();
+
+    clock.restore();
+
+    wrapper.vm.timeout();
+
+    moxios.wait(() => {
+      let request = moxios.requests.mostRecent();
+
+      request.respondWith({
+        status: 200,
+        response: { }
+      }).then(() => {
+        see('Total Score: 0');
 
         done()
       })

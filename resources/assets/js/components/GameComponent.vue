@@ -3,41 +3,42 @@
         class="p-8 rounded overflow-hidden shadow-lg relative bg-cover"
         :style="{ width: '400px', height: '400px', backgroundImage: 'url(' + playlist_image + ')'}"
     >
-        <div class="absolute w-full h-full opacity-75 bg-grey-dark pin-t pin-l"></div>
-        <div class="flex flex-col items-center absolute w-full h-full pin-t pin-l select-none">
+        <div class="absolute w-full h-full opacity-75 bg-grey-darkest pin-t pin-l"></div>
+        <div class="flex flex-col justify-between py-3 items-center absolute w-full h-full pin-t pin-l select-none">
             <audio preload id="song">
                 <source :src="currentSongUrl" type="audio/mp3">
             </audio>
 
-            <div class="text-center text-2xl">
+            <div class="text-center text-2xl text-white">
                 Total Score: {{ score }}
             </div>
 
-            <div v-if="message" class="text-center text-xl">
+            <div v-if="message" class="text-center text-xl text-white">
                 <p>{{ message }}</p>
             </div>
 
             <countdown-timer
-                    :data-total-percentage="30"
-                    :start="gameInProgress"
-                    :reset="resetTimer"
+                :data-total-percentage="30"
+                :start="gameInProgress"
+                :reset="resetTimer"
+                @finished="timeout"
             >
             </countdown-timer>
 
             <button
-                    id="game-start"
-                    class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
-                    @click="startGame"
-                    v-if="!gameInProgress"
+                id="game-start"
+                class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
+                @click="startGame"
+                v-if="!gameInProgress"
             >
                 Start!
             </button>
 
-            <div v-else id="answers" class="flex flex-col items-center text-xs">
+            <div v-else id="answers" class="text-xs">
                 <button
-                        class="mt-1 bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
-                        @click="checkAnswer(track)"
-                        v-for="track in currentTracks"
+                    class="mt-1 bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
+                    @click="checkAnswer(track)"
+                    v-for="track in currentTracks"
                 >
                     {{ track.name }} - {{ track.artists.map((artist) => artist.name).join(', ') }}
                 </button>
@@ -110,7 +111,7 @@ export default {
         return;
       }
 
-      this.score = response.data.score;
+      this.score = response.data.score || this.score;
       this.message = response.data.message;
       this.currentTracks = response.data.tracks;
       this.currentSongUrl = response.data.current_song_url;
@@ -120,6 +121,10 @@ export default {
 
       this.audio.load();
       this.audio.play();
+    },
+
+    timeout() {
+      this.checkAnswer("");
     }
   }
 };

@@ -39,9 +39,8 @@ class GamesTest extends TestCase
     /** @test */
     public function logged_in_users_can_play_game()
     {
-        $this->actingAs(\create(User::class));
-
         $response = $this
+            ->actingAs(\create(User::class))
             ->withPlaylistCache($this->playlist)
             ->get(\route('games.index', 'rock-hard'));
 
