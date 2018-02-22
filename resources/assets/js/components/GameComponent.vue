@@ -25,6 +25,7 @@
             </countdown-timer>
 
             <button
+                    id="game-start"
                     class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
                     @click="startGame"
                     v-if="!gameInProgress"
@@ -32,7 +33,7 @@
                 Start!
             </button>
 
-            <div v-else class="flex flex-col items-center text-xs">
+            <div v-else id="answers" class="flex flex-col items-center text-xs">
                 <button
                         class="mt-1 bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
                         @click="checkAnswer(track)"
@@ -99,13 +100,11 @@ export default {
       });
 
       if (response.data.message === "finished") {
-        swal({
+        await swal({
           type: "success",
           title: "Good Job!",
           text: `You scored ${this.score} points! Now play another one!`,
           allowOutsideClick: false
-        }).then(result => {
-          window.location.replace("/");
         });
 
         return;
