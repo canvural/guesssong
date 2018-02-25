@@ -13,12 +13,12 @@ class Game extends Model
     {
         return $this->belongsTo(User::class);
     }
-    
+
     /**
      * Get the users last played game with the given playlist.
      *
      * @param Builder $query
-     * @param string $playlistId
+     * @param string  $playlistId
      *
      * @return Builder
      */

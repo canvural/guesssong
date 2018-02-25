@@ -15,16 +15,19 @@ class PlaylistController extends Controller
      *
      * @return View
      */
-    public function show($category, MusicService $spotify): View
+    public function index($category, MusicService $spotify): View
     {
-        $playlists = \Cache::remember($category, now()->addDay(), function () use ($category, $spotify) {
+        $playlists = \Cache::remember($category, now()->addWeek(), function () use ($category, $spotify) {
             return $spotify->getCategoryPlaylists($category);
         });
 
         collect($playlists)->each(function ($playlist) {
-            \Cache::add('playlist_'.str_slug($playlist['name']), $playlist, now()->addDay());
+            \Cache::add('playlist_'.str_slug($playlist['name']), $playlist, now()->addWeek());
         });
 
-        return view('playlists.show')->with(compact('playlists'));
+        return view('playlists.show')->with([
+            'playlists' => $playlists,
+            'route' => 'games.index',
+        ]);
     }
 }

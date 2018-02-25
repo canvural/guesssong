@@ -13,15 +13,29 @@
 
 Auth::routes();
 
-Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider');
-Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback');
+Route::get('/', function () {
+    dd(Socialite::driver('spotify'));
+});
 
-Route::get('/categories', 'CategoryController@index')->name('categories.index');
+Route::middleware(['guest'])->group(function () {
+    Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider');
+    Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback');
+});
 
-Route::get('playlists/{category}', 'PlaylistController@show')->name('playlists.show');
+Route::group(['prefix' => 'me', 'middleware' => 'auth'], function () {
+    Route::get('playlists', 'UserPlaylistController@index')->name('userplaylists.index');
+});
 
 Route::middleware(['auth'])->group(function () {
     Route::get('game/{playlistName}', 'GameController@index')->name('games.index');
+    Route::get('me/game/{playlistName}', 'GameController@index')->name('usergames.index');
+
     Route::post('game/{playlistName}', 'GameController@store')->name('games.store');
+    Route::post('me/game/{playlistName}', 'GameController@store')->name('usergames.store');
+
     Route::post('game/{playlistName}/answer', 'GameAnswerController@create')->name('gameAnswers.create');
+    Route::post('me/game/{playlistName}/answer', 'GameAnswerController@create')->name('usergameAnswers.create');
 });
+
+Route::get('/categories', 'CategoryController@index')->name('categories.index');
+Route::get('playlists/{category}', 'PlaylistController@index')->name('playlists.index');

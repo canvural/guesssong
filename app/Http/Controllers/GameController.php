@@ -18,9 +18,11 @@ class GameController extends Controller
      *
      * @return View|RedirectResponse
      */
-    public function index(string $playlistName)
+    public function index(Request $request, string $playlistName)
     {
-        $playlist = \Cache::get('playlist_'.$playlistName);
+        $playlistPrefix = $this->getPlaylistPrefix($request);
+
+        $playlist = \Cache::get($playlistPrefix.$playlistName);
 
         \abort_if(null === $playlist, 404);
 
@@ -43,14 +45,16 @@ class GameController extends Controller
      */
     public function store(Request $request, string $playlistName, MusicService $spotify): JsonResponse
     {
-        $playlistId = $request->input('playlist');
-        $playlist = \Cache::get('playlist_'.$playlistName);
+        $playlistPrefix = $this->getPlaylistPrefix($request);
 
-        if (! $this->checkValidPlaylist($playlistName, $playlistId)) {
+        $playlistId = $request->input('playlist');
+        $playlist = \Cache::get($playlistPrefix.$playlistName);
+
+        if (! $this->checkValidPlaylist($playlistPrefix, $playlistName, $playlistId)) {
             return \response()->json([], 404);
         }
 
-        $tracks = \Cache::remember($playlist['id'].'_tracks', now()->addDay(), function () use ($playlist, $spotify) {
+        $tracks = \Cache::remember($playlist['id'].'_tracks', now()->addWeek(), function () use ($playlist, $spotify) {
             return $spotify->getTracksForPlaylist($playlist);
         });
 

@@ -48,4 +48,20 @@ class SpotifyFake implements MusicService
             })
             ->take(4);
     }
+
+    public function getUserPlaylists($userId)
+    {
+        return \get_fake_data('user_playlists.json');
+    }
+
+    /**
+     * Should fetch the new access token and set it.
+     * And return the new refresh token if successfull or false otherwise.
+     *
+     * @return string|bool
+     */
+    public function refreshUserAccessToken()
+    {
+        return '';
+    }
 }

@@ -5,7 +5,6 @@
         <div class="w-full max-w-xs">
             <form method="POST" action="{{ route('login') }}" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                 @csrf
-
                 <div class="mb-4">
                     <label class="block text-grey-darker text-sm font-bold mb-2" for="email">
                         Email
@@ -35,6 +34,10 @@
                     <a class="inline-block align-baseline font-bold text-sm text-blue hover:text-blue-darker" href="{{ route('password.request') }}">
                         Forgot Password?
                     </a>
+                </div>
+
+                <div class="border-t mt-6 text-center pt-4">
+                    <a href="/login/spotify" class="no-underline bg-spotify text-white font-bold py-2 px-4 rounded inline-flex items-center">@svg('spotify') Log in with Spotify</a>
                 </div>
             </form>
             <div class="text-center">

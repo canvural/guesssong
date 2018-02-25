@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\UserAnsweredRight;
 use App\Services\MusicService;
 use Illuminate\Http\Request;
 
@@ -10,13 +9,14 @@ class GameAnswerController extends Controller
 {
     public function create(Request $request, string $playlistName, MusicService $spotify)
     {
+        $playlistPrefix = $this->getPlaylistPrefix($request);
         $playlistId = $request->input('playlist');
-        $playlist = \Cache::get('playlist_'.$playlistName);
-    
-        if (! $this->checkValidPlaylist($playlistName, $playlistId)) {
+        $playlist = \Cache::get($playlistPrefix.$playlistName);
+
+        if (! $this->checkValidPlaylist($playlistPrefix, $playlistName, $playlistId)) {
             return \response()->json([], 404);
         }
-        
+
         $tracks = \Cache::get($playlist['id'].'_tracks');
 
         $message = 'Not correct!';

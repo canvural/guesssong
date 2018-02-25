@@ -34,14 +34,15 @@
                 Start!
             </button>
 
-            <div v-else id="answers" class="text-xs">
-                <button
-                    class="mt-1 bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
-                    @click="checkAnswer(track)"
-                    v-for="track in currentTracks"
-                >
-                    {{ track.name }} - {{ track.artists.map((artist) => artist.name).join(', ') }}
-                </button>
+            <div v-else id="answers" class="flex flex-wrap text-xs p-8 -mx-2">
+                <div class="px-2 w-1/2 flex-grow" v-for="track in currentTracks">
+                    <button
+                        class="mt-1 bg-blue hover:bg-blue-dark text-white font-bold p-2 rounded w-full"
+                        @click="checkAnswer(track)"
+                    >
+                        {{ track.name }} - {{ track.artists.map((artist) => artist.name).join(', ') }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>

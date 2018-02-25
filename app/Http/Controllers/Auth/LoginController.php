@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\SocialiteScopes;
+use App\SocialLogin;
 use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
-use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {
@@ -48,7 +48,7 @@ class LoginController extends Controller
      */
     public function redirectToProvider($provider): RedirectResponse
     {
-        return Socialite::driver($provider)->scopes(['email', 'read_custom_friendlists'])->redirect();
+        return \Socialite::driver($provider)->scopes(SocialiteScopes::$provider())->redirect();
     }
 
     /**
@@ -60,11 +60,11 @@ class LoginController extends Controller
      */
     public function handleProviderCallback($provider): RedirectResponse
     {
-        $user = Socialite::driver($provider)->user();
+        $user = \Socialite::driver($provider)->user();
 
         $authUser = $this->findOrCreateUser($user, $provider);
 
-        Auth::login($authUser, true);
+        \Auth::login($authUser, true);
 
         return redirect($this->redirectTo);
     }
@@ -80,17 +80,26 @@ class LoginController extends Controller
      */
     public function findOrCreateUser($user, $provider): User
     {
-        $authUser = User::where('provider_id', $user->id)->first();
+        $authUser = User::firstOrCreate(
+            ['email' => $user->email],
+            ['name' => $user->name]
+        );
 
-        if ($authUser) {
-            return $authUser;
+        $socialProfile = $authUser->socialLogin ?: new SocialLogin();
+
+        $providerField = "{$provider}_id";
+        $providerTokenField = "{$provider}_token";
+        $providerRefreshTokenField = "{$provider}_refresh_token";
+
+        $socialProfile->{$providerTokenField} = $user->token;
+        $socialProfile->{$providerRefreshTokenField} = $user->refreshToken;
+
+        if (empty($socialProfile->{$providerField})) {
+            $socialProfile->{$providerField} = $user->id;
+
+            $authUser->socialLogin()->save($socialProfile);
         }
 
-        return User::create([
-            'name'     => $user->name,
-            'email'    => $user->email,
-            'provider' => $provider,
-            'provider_id' => $user->id,
-        ]);
+        return $authUser;
     }
 }

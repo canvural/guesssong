@@ -4,6 +4,8 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use SpotifyWebAPI\SpotifyWebAPIException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -31,6 +33,8 @@ class Handler extends ExceptionHandler
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
      * @param \Exception $exception
+     *
+     * @throws Exception
      */
     public function report(Exception $exception)
     {
@@ -47,6 +51,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof SpotifyWebAPIException) {
+            if (\str_contains($exception->getMessage(), 'doesn\'t exist')) {
+                $exception = new NotFoundHttpException($exception->getMessage(), $exception);
+            }
+        }
+
         return parent::render($request, $exception);
     }
 }

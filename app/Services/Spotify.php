@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use SpotifyWebAPI\Session as SpotifySession;
 use SpotifyWebAPI\SpotifyWebAPI;
+use SpotifyWebAPI\SpotifyWebAPIException;
 
 class Spotify implements MusicService
 {
@@ -11,51 +13,62 @@ class Spotify implements MusicService
      */
     private $api;
 
-    public function __construct()
+    /**
+     * @var string user refresh token for access token
+     */
+    private $refreshToken;
+
+    public function __construct($accessToken, $refreshToken)
     {
-        $accessToken = \Cache::remember('spotify_access_token', 60, function () {
-            $session = new \SpotifyWebAPI\Session(env('SPOTIFY_CLIENT_ID'), env('SPOTIFY_CLIENT_SECRET'));
-            $session->requestCredentialsToken();
-
-            return $session->getAccessToken();
-        });
-
         $api = new SpotifyWebAPI();
         $api->setReturnType(SpotifyWebAPI::RETURN_ASSOC);
         $api->setAccessToken($accessToken);
 
         $this->api = $api;
+        $this->refreshToken = $refreshToken;
     }
 
     /**
+     * @throws SpotifyWebAPIException
+     *
      * @return array
      */
     public function getPlaylistCategoriesForGame(): array
     {
-        return $this->api->getCategoriesList([
-            'offset' => 0,
-            'limit' => 50,
-        ])['categories']['items'];
+        return $this->callWithErrorHandling(function () {
+            return $this->api->getCategoriesList([
+                'offset' => 0,
+                'limit' => 50,
+            ])['categories']['items'];
+        });
     }
 
     /**
      * @param string $category Spotify category id
      *
+     * @throws SpotifyWebAPIException
+     *
      * @return array
      */
     public function getCategoryPlaylists($category): array
     {
-        return $this->api->getCategoryPlaylists($category)['playlists']['items'];
+        return $this->callWithErrorHandling(function () use ($category) {
+            return $this->api->getCategoryPlaylists($category)['playlists']['items'];
+        });
     }
 
     /**
      * @param array $playlist
      *
+     * @throws SpotifyWebAPIException
+     *
      * @return array
      */
     public function getTracksForPlaylist(array $playlist): array
     {
-        return $this->api->getUserPlaylistTracks($playlist['owner']['id'], $playlist['id']);
+        return $this->callWithErrorHandling(function () use ($playlist) {
+            return $this->api->getUserPlaylistTracks($playlist['owner']['id'], $playlist['id']);
+        });
     }
 
     /**
@@ -90,5 +103,58 @@ class Spotify implements MusicService
                 ];
             })
             ->take(4);
+    }
+
+    /**
+     * @param $userId
+     *
+     * @throws SpotifyWebAPIException
+     *
+     * @return array|mixed
+     */
+    public function getUserPlaylists($userId)
+    {
+        return $this->callWithErrorHandling(function () use ($userId) {
+            return $this->api->getUserPlaylists($userId)['items'];
+        });
+    }
+
+    public function refreshUserAccessToken()
+    {
+        $session = new SpotifySession(env('SPOTIFY_CLIENT_ID'), env('SPOTIFY_CLIENT_SECRET'));
+
+        if ($session->refreshAccessToken($this->refreshToken)) {
+            $this->api->setAccessToken($session->getAccessToken());
+
+            return $session->getRefreshToken();
+        }
+
+        return false;
+    }
+
+    private function callWithErrorHandling(\Closure $callback)
+    {
+        $return = [];
+
+        try {
+            $return = $callback();
+        } catch (SpotifyWebAPIException $e) {
+            if (\str_contains($e->getMessage(), 'expired')) {
+                $refreshToken = $this->refreshUserAccessToken();
+
+                if ($refreshToken) {
+                    auth()->user()->socialLogin->update([
+                        'spotify_refresh_token' => $refreshToken,
+                    ]);
+                }
+
+                // Retry
+                return $callback();
+            }
+
+            throw $e;
+        }
+
+        return $return;
     }
 }
