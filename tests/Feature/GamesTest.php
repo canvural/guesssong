@@ -2,11 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Services\MusicService;
 use App\User;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Fakes\SpotifyFake;
 use Tests\TestCase;
 
 class GamesTest extends TestCase
@@ -19,8 +16,6 @@ class GamesTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-
-        $this->app->bind(MusicService::class, SpotifyFake::class);
 
         $this->playlist = \get_playlist('rock-hard');
         $this->tracks = \get_fake_data($this->playlist['id'].'_tracks.json');

@@ -138,7 +138,7 @@ describe ('Game', () => {
     })
   });
 
-  it.only ('automatically submits an empty answer when timer is finished', done => {
+  it ('automatically submits an empty answer when timer is finished', done => {
     wrapper.setData({
       audio: document.createElement('audio'),
       gameInProgress: true,

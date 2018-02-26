@@ -2,9 +2,8 @@
 
 namespace App\Providers;
 
-use App\Events\UserAnsweredRight;
-use App\Listeners\UpdateScore;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use SocialiteProviders\Manager\SocialiteWasCalled;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -14,7 +13,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        
+        SocialiteWasCalled::class => [
+            'SocialiteProviders\Spotify\SpotifyExtendSocialite@handle',
+        ],
     ];
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Auth;
 
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
-class AuthenticationTest extends TestCase
+class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -24,6 +24,7 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect('/categories');
         $this->assertTrue(Auth::check());
         $this->assertCount(1, User::all());
+
         tap(User::first(), function ($user) {
             $this->assertEquals('John Doe', $user->name);
             $this->assertEquals('johndoe@example.com', $user->email);
