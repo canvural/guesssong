@@ -12,7 +12,7 @@
         "test-watch": "mocha-webpack --webpack-config=node_modules/laravel-mix/setup/webpack.config.js --watch --require tests/Javascript/setup.js tests/Javascript/**/*.js"
     },
     "devDependencies": {
-        "@vue/test-utils": "^1.0.0-beta.11",
+        "@vue/test-utils": "1.0.0-beta.11",
         "cross-env": "^5.1",
         "expect": "^22.3.0",
         "jsdom": "^11.6.2",
