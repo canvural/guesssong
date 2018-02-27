@@ -147,7 +147,7 @@ class Spotify implements MusicService
 
             return [
                 'access_token' => $session->getAccessToken(),
-                'refresh_token' => $session->getRefreshToken(),
+                'refresh_token' => $session->getRefreshToken() ?? $this->refreshToken,
             ];
         }
 

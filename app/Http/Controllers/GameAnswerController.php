@@ -9,9 +9,7 @@ class GameAnswerController extends Controller
 {
     public function create(Request $request, MusicService $musicService, string $playlistId)
     {
-        $userId = $this->resolveUserIdFromRequest($request);
-
-        $playlist = $musicService->getUserPlaylist($userId, $playlistId);
+        $playlist = $musicService->getUserPlaylist($this->resolveUserIdFromRequest($request), $playlistId);
 
         if (! $this->isValidPlaylist($playlistId)) {
             return \response()->json([], 404);

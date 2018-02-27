@@ -10,13 +10,13 @@ class CategoryController extends Controller
     /**
      * Show the home screen.
      *
-     * @param MusicService $spotify
+     * @param MusicService $musicService
      *
      * @return View
      */
-    public function index(MusicService $spotify): View
+    public function index(MusicService $musicService): View
     {
-        $categories = collect($spotify->getPlaylistCategoriesForGame())->shuffle();
+        $categories = collect($musicService->getPlaylistCategoriesForGame())->shuffle();
 
         return view('home')->with(compact('categories'));
     }

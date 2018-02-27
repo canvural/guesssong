@@ -94,9 +94,12 @@ export default {
       this.gameInProgress = false;
       this.resetTimer = true;
 
-      const response = await axios.post(`${window.location.href}/answer`, {
-        answer: track.id
-      });
+      const response = await axios.post(
+        window.location.href.replace("?u", "/answer?u"),
+        {
+          answer: track.id
+        }
+      );
 
       if (response.data.message === "finished") {
         await swal({
