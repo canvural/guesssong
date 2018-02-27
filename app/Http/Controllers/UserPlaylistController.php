@@ -16,7 +16,7 @@ class UserPlaylistController extends Controller
 
         return view('playlists.show')->with([
             'playlists' => $playlists,
-            'route' => 'usergames.index',
+            'route' => 'usergames.create',
         ]);
     }
 }

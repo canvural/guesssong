@@ -20,7 +20,7 @@ class GameController extends Controller
      *
      * @return View|RedirectResponse
      */
-    public function index(Request $request, MusicService $musicService, string $playlistId)
+    public function create(Request $request, MusicService $musicService, string $playlistId)
     {
         $userId = $this->resolveUserIdFromRequest($request);
 
@@ -28,7 +28,7 @@ class GameController extends Controller
 
         \session(['current_playlist' => $playlist['id']]);
 
-        return \view('games.index')->with([
+        return \view('games.create')->with([
             'playlistImage' => $playlist['images'][0]['url'],
         ]);
     }

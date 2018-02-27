@@ -25,7 +25,7 @@ class GamesTest extends TestCase
     /** @test */
     public function guests_can_not_play_a_game()
     {
-        $response = $this->get(\route('games.index', 'rock-hard'));
+        $response = $this->get(\route('games.create', 'rock-hard'));
 
         $response
             ->assertRedirect('/login')
@@ -37,7 +37,7 @@ class GamesTest extends TestCase
     {
         $response = $this
             ->actingAs(\create(User::class))
-            ->get(\route('games.index', $this->playlist['id']));
+            ->get(\route('games.create', $this->playlist['id']));
 
         $response
             ->assertStatus(200)
@@ -50,7 +50,7 @@ class GamesTest extends TestCase
         $this->actingAs(\factory(User::class)->create());
 
         $response = $this
-            ->get(\route('games.index', 'not-a-validplaylist-id'));
+            ->get(\route('games.create', 'not-a-validplaylist-id'));
 
         $response->assertStatus(404);
     }
@@ -60,7 +60,7 @@ class GamesTest extends TestCase
     {
         $this->actingAs(\create(User::class));
 
-        $response = $this->get(\route('games.index', $this->playlist['id']));
+        $response = $this->get(\route('games.create', $this->playlist['id']));
 
         $response->assertSessionHas('current_playlist', $this->playlist['id']);
     }

@@ -27,8 +27,8 @@ Route::group(['prefix' => 'me', 'middleware' => 'auth'], function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('game/{playlistId}/{playlistSlug?}', 'GameController@index')->name('games.index');
-    Route::get('me/game/{playlistId}/{playlistSlug?}', 'GameController@index')->name('usergames.index');
+    Route::get('game/{playlistId}/{playlistSlug?}', 'GameController@create')->name('games.create');
+    Route::get('me/game/{playlistId}/{playlistSlug?}', 'GameController@create')->name('usergames.create');
 
     Route::post('game/{playlistId}/{playlistSlug?}', 'GameController@store')->name('games.store');
     Route::post('me/game/{playlistId}/{playlistSlug?}', 'GameController@store')->name('usergames.store');
