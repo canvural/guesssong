@@ -16,13 +16,7 @@ class CategoryController extends Controller
      */
     public function index(MusicService $spotify): View
     {
-        $categories = collect(
-            \Cache::rememberForever('categories', function () use ($spotify) {
-                return $spotify->getPlaylistCategoriesForGame();
-            })
-        )
-            ->shuffle()
-            ->toArray();
+        $categories = collect($spotify->getPlaylistCategoriesForGame())->shuffle();
 
         return view('home')->with(compact('categories'));
     }

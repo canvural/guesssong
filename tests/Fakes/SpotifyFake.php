@@ -49,7 +49,11 @@ class SpotifyFake implements MusicService
             ->take(4);
     }
 
-    public function getUserPlaylists($userId)
+    public function getUserPlaylist(string $userId, string $playlistId)
+    {
+    }
+
+    public function getUserPlaylists(string $userId = 'me')
     {
         return \get_fake_data('user_playlists.json');
     }

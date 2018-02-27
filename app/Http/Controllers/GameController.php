@@ -14,17 +14,17 @@ class GameController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param string $playlistName
+     * @param Request      $request
+     * @param MusicService $musicService
+     * @param string       $playlistId
      *
      * @return View|RedirectResponse
      */
-    public function index(Request $request, string $playlistName)
+    public function index(Request $request, MusicService $musicService, string $playlistId)
     {
-        $playlistPrefix = $this->getPlaylistPrefix($request);
+        $userId = $this->resolveUserIdFromRequest($request);
 
-        $playlist = \Cache::get($playlistPrefix.$playlistName);
-
-        \abort_if(null === $playlist, 404);
+        $playlist = $musicService->getUserPlaylist($userId, $playlistId);
 
         \session(['current_playlist' => $playlist['id']]);
 
@@ -38,28 +38,25 @@ class GameController extends Controller
      * Start a new game for the player.
      *
      * @param Request      $request
-     * @param string       $playlistName
-     * @param MusicService $spotify
+     * @param string       $playlistId
+     * @param MusicService $musicService
      *
      * @return JsonResponse
      */
-    public function store(Request $request, string $playlistName, MusicService $spotify): JsonResponse
+    public function store(Request $request, MusicService $musicService, string $playlistId): JsonResponse
     {
-        $playlistPrefix = $this->getPlaylistPrefix($request);
+        $userId = $this->resolveUserIdFromRequest($request);
 
-        $playlistId = $request->input('playlist');
-        $playlist = \Cache::get($playlistPrefix.$playlistName);
+        $playlist = $musicService->getUserPlaylist($userId, $playlistId);
 
-        if (! $this->checkValidPlaylist($playlistPrefix, $playlistName, $playlistId)) {
+        if (! $this->isValidPlaylist($playlistId)) {
             return \response()->json([], 404);
         }
 
-        $tracks = \Cache::remember($playlist['id'].'_tracks', now()->addWeek(), function () use ($playlist, $spotify) {
-            return $spotify->getTracksForPlaylist($playlist);
-        });
+        $tracks = $musicService->getTracksForPlaylist($playlist);
 
         /** @var Collection $tracks */
-        $tracks = $spotify->filterTracks($tracks['items'], \session('recently_played_tracks', []));
+        $tracks = $musicService->filterTracks($tracks['items'], \session('recently_played_tracks', []));
 
         $answer = $tracks->random();
 

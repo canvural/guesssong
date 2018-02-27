@@ -8,7 +8,9 @@ interface MusicService
 
     public function getTracksForPlaylist(array $playlist);
 
-    public function getUserPlaylists($userId);
+    public function getUserPlaylist(string $userId, string $playlistId);
+
+    public function getUserPlaylists(string $userId = 'me');
 
     public function getCategoryPlaylists($category);
 
@@ -16,7 +18,7 @@ interface MusicService
 
     /**
      * Should fetch the new access token and set it.
-     * And return the new refresh token if successfull or false otherwise.
+     * And return the new refresh token and access token if successfull or false otherwise.
      *
      * @return string|bool
      */

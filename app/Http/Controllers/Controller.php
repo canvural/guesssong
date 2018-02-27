@@ -12,20 +12,24 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected function checkValidPlaylist(string $playlistPrefix, string $playlistName, string $playlistId): bool
+    protected function isValidPlaylist(string $playlistId): bool
     {
-        return \session('current_playlist') === $playlistId &&
-            \Cache::has($playlistPrefix.$playlistName);
+        return \session('current_playlist') === $playlistId;
     }
 
-    protected function getPlaylistPrefix(Request $request): string
+    protected function isUserGame(Request $request): bool
     {
-        $playlistPrefix = 'playlist_';
+        return \starts_with($request->route()->getName(), 'usergame');
+    }
 
-        if (\starts_with($request->route()->getName(), 'usergame')) {
-            $playlistPrefix .= 'user_'.$request->user()->id.'_';
+    protected function resolveUserIdFromRequest(Request $request)
+    {
+        if ($request->has('u')) {
+            return $request->query('u');
         }
 
-        return $playlistPrefix;
+        return $this->isUserGame($request) ?
+            $request->user()->socialLogin->spotify_id :
+            'spotify';
     }
 }

@@ -7,17 +7,17 @@ use Illuminate\Http\Request;
 
 class GameAnswerController extends Controller
 {
-    public function create(Request $request, string $playlistName, MusicService $spotify)
+    public function create(Request $request, MusicService $musicService, string $playlistId)
     {
-        $playlistPrefix = $this->getPlaylistPrefix($request);
-        $playlistId = $request->input('playlist');
-        $playlist = \Cache::get($playlistPrefix.$playlistName);
+        $userId = $this->resolveUserIdFromRequest($request);
 
-        if (! $this->checkValidPlaylist($playlistPrefix, $playlistName, $playlistId)) {
+        $playlist = $musicService->getUserPlaylist($userId, $playlistId);
+
+        if (! $this->isValidPlaylist($playlistId)) {
             return \response()->json([], 404);
         }
 
-        $tracks = \Cache::get($playlist['id'].'_tracks');
+        $tracks = $musicService->getTracksForPlaylist($playlist);
 
         $message = 'Not correct!';
 
@@ -27,7 +27,7 @@ class GameAnswerController extends Controller
             $request->user()->addScoreForGame($playlist['id'], \session('last_game_answer_time'));
         }
 
-        $tracks = $spotify->filterTracks($tracks['items'], \session('recently_played_tracks'));
+        $tracks = $musicService->filterTracks($tracks['items'], \session('recently_played_tracks'));
 
         if ($tracks->isEmpty()) {
             \session()->forget([

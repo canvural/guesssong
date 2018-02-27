@@ -106,16 +106,35 @@ class Spotify implements MusicService
     }
 
     /**
-     * @param $userId
+     * @param string $userId
+     * @param string $playlistId
      *
      * @throws SpotifyWebAPIException
      *
      * @return array|mixed
      */
-    public function getUserPlaylists($userId)
+    public function getUserPlaylist(string $userId, string $playlistId)
+    {
+        return $this->callWithErrorHandling(function () use ($userId, $playlistId) {
+            return $this->api->getUserPlaylist($userId, $playlistId);
+        });
+    }
+
+    /**
+     * @param string $userId
+     *
+     * @throws SpotifyWebAPIException
+     *
+     * @return array
+     */
+    public function getUserPlaylists(string $userId = 'me')
     {
         return $this->callWithErrorHandling(function () use ($userId) {
-            return $this->api->getUserPlaylists($userId)['items'];
+            $playlists = 'me' === $userId ?
+                $this->api->getMyPlaylists() :
+                $this->api->getUserPlaylists($userId);
+
+            return $playlists['items'];
         });
     }
 
@@ -126,7 +145,10 @@ class Spotify implements MusicService
         if ($session->refreshAccessToken($this->refreshToken)) {
             $this->api->setAccessToken($session->getAccessToken());
 
-            return $session->getRefreshToken();
+            return [
+                'access_token' => $session->getAccessToken(),
+                'refresh_token' => $session->getRefreshToken(),
+            ];
         }
 
         return false;
@@ -140,11 +162,12 @@ class Spotify implements MusicService
             $return = $callback();
         } catch (SpotifyWebAPIException $e) {
             if (\str_contains($e->getMessage(), 'expired')) {
-                $refreshToken = $this->refreshUserAccessToken();
+                $updatedTokens = $this->refreshUserAccessToken();
 
-                if ($refreshToken) {
+                if ($updatedTokens) {
                     auth()->user()->socialLogin->update([
-                        'spotify_refresh_token' => $refreshToken,
+                        'spotify_token' => $updatedTokens['access_token'],
+                        'spotify_refresh_token' => $updatedTokens['refresh_token'],
                     ]);
                 }
 

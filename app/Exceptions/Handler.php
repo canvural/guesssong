@@ -52,7 +52,7 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         if ($exception instanceof SpotifyWebAPIException) {
-            if (\str_contains($exception->getMessage(), 'doesn\'t exist')) {
+            if (\str_contains(\strtolower($exception->getMessage()), ['doesn\'t exist', 'not found'])) {
                 $exception = new NotFoundHttpException($exception->getMessage(), $exception);
             }
         }

@@ -17,13 +17,7 @@ class PlaylistController extends Controller
      */
     public function index($category, MusicService $spotify): View
     {
-        $playlists = \Cache::remember($category, now()->addWeek(), function () use ($category, $spotify) {
-            return $spotify->getCategoryPlaylists($category);
-        });
-
-        collect($playlists)->each(function ($playlist) {
-            \Cache::add('playlist_'.str_slug($playlist['name']), $playlist, now()->addWeek());
-        });
+        $playlists = $spotify->getCategoryPlaylists($category);
 
         return view('playlists.show')->with([
             'playlists' => $playlists,

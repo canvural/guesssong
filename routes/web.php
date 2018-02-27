@@ -27,14 +27,14 @@ Route::group(['prefix' => 'me', 'middleware' => 'auth'], function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('game/{playlistName}', 'GameController@index')->name('games.index');
-    Route::get('me/game/{playlistName}', 'GameController@index')->name('usergames.index');
+    Route::get('game/{playlistId}/{playlistSlug?}', 'GameController@index')->name('games.index');
+    Route::get('me/game/{playlistId}/{playlistSlug?}', 'GameController@index')->name('usergames.index');
 
-    Route::post('game/{playlistName}', 'GameController@store')->name('games.store');
-    Route::post('me/game/{playlistName}', 'GameController@store')->name('usergames.store');
+    Route::post('game/{playlistId}/{playlistSlug?}', 'GameController@store')->name('games.store');
+    Route::post('me/game/{playlistId}/{playlistSlug?}', 'GameController@store')->name('usergames.store');
 
-    Route::post('game/{playlistName}/answer', 'GameAnswerController@create')->name('gameAnswers.create');
-    Route::post('me/game/{playlistName}/answer', 'GameAnswerController@create')->name('usergameAnswers.create');
+    Route::post('game/{playlistId}/{playlistSlug?}/answer', 'GameAnswerController@create')->name('gameAnswers.create');
+    Route::post('me/game/{playlistId}/{playlistSlug?}/answer', 'GameAnswerController@create')->name('usergameAnswers.create');
 });
 
 Route::get('/categories', 'CategoryController@index')->name('categories.index');
