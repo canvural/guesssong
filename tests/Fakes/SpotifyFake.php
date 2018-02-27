@@ -3,6 +3,7 @@
 namespace Tests\Fakes;
 
 use App\Services\MusicService;
+use SpotifyWebAPI\SpotifyWebAPIException;
 
 class SpotifyFake implements MusicService
 {
@@ -49,8 +50,23 @@ class SpotifyFake implements MusicService
             ->take(4);
     }
 
+    /**
+     * @param string $userId
+     * @param string $playlistId
+     *
+     * @throws SpotifyWebAPIException
+     *
+     * @return mixed
+     */
     public function getUserPlaylist(string $userId, string $playlistId)
     {
+        $playlist = \get_playlist('rock-hard');
+
+        if ($playlist['id'] !== $playlistId) {
+            throw new SpotifyWebAPIException('Not found');
+        }
+
+        return $playlist;
     }
 
     public function getUserPlaylists(string $userId = 'me')

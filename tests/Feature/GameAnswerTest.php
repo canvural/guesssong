@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Game;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use SpotifyWebAPI\SpotifyWebAPIException;
 use Tests\TestCase;
 
 class GameAnswerTest extends TestCase
@@ -26,7 +27,7 @@ class GameAnswerTest extends TestCase
     public function guests_can_not_answer_a_game()
     {
         $response = $this
-            ->post(\route('gameAnswers.create', 'rock-hard'), [
+            ->post(\route('gameAnswers.create', [$this->playlist['id'], 'rock-hard']), [
                 'answer' => 'an-answer',
             ]);
 
@@ -36,14 +37,15 @@ class GameAnswerTest extends TestCase
     /** @test */
     public function answering_a_game_with_different_playlist_than_the_one_in_session_will_fail()
     {
+        $this->expectException(SpotifyWebAPIException::class);
+
         $this->actingAs(\create(User::class));
 
         $response = $this->withoutExceptionHandling()->withSession([
             'answer' => 'correct-answer',
             'current_playlist' => $this->playlist['id'],
-        ])->post(\route('gameAnswers.create', 'rock-hard'), [
+        ])->post(\route('gameAnswers.create', ['not-valid-playlist-id', 'rock-hard']), [
             'answer' => 'an-answer',
-            'playlist' => 'random-playlist',
         ]);
 
         $response->assertStatus(404);
@@ -66,12 +68,8 @@ class GameAnswerTest extends TestCase
                 'recently_played_tracks' => [],
                 'current_playlist' => $this->playlist['id'],
             ])
-            ->withPlaylistCache($this->playlist)
-            ->withPlaylistCacheExistence($this->playlist)
-            ->withPlaylistTracksCache($this->playlist, $this->tracks)
-            ->post(\route('gameAnswers.create', 'rock-hard'), [
+            ->post(\route('gameAnswers.create', [$this->playlist['id'], 'rock-hard']), [
                 'answer' => 'incorrect-answer',
-                'playlist' => $this->playlist['id'],
             ]);
 
         $this->assertSame($usersGame->score, (int) $usersGame->fresh()->score);
@@ -96,14 +94,11 @@ class GameAnswerTest extends TestCase
                 'last_game_answer_time' => $now->timestamp,
                 'current_playlist' => $this->playlist['id'],
             ])
-            ->withPlaylistCache($this->playlist)
-            ->withPlaylistCacheExistence($this->playlist)
-            ->withPlaylistTracksCache($this->playlist, $this->tracks)
             ->progressTime(0, 5)
-            ->post(\route('gameAnswers.create', 'rock-hard'), [
+            ->post(\route('gameAnswers.create', [$this->playlist['id'], 'rock-hard']), [
                 'answer' => 'correct-answer',
-                'playlist' => $this->playlist['id'],
-            ]);
+            ])
+            ->assertStatus(200);
 
         // Guessed in 5 seconds hence 125 points
         $this->assertEquals(125, $usersGame->fresh()->score);
@@ -128,13 +123,9 @@ class GameAnswerTest extends TestCase
                 'last_game_answer_time' => $now->timestamp,
                 'current_playlist' => $this->playlist['id'],
             ])
-            ->withPlaylistCache($this->playlist)
-            ->withPlaylistCacheExistence($this->playlist)
-            ->withPlaylistTracksCache($this->playlist, $this->tracks)
             ->progressTime(0, 31)
-            ->post(\route('gameAnswers.create', 'rock-hard'), [
+            ->post(\route('gameAnswers.create', [$this->playlist['id'], 'rock-hard']), [
                 'answer' => 'correct-answer',
-                'playlist' => $this->playlist['id'],
             ]);
 
         $this->assertEquals($usersGame->score, $usersGame->fresh()->score);

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use SpotifyWebAPI\SpotifyWebAPIException;
 use Tests\TestCase;
 
 class GamesTest extends TestCase
@@ -36,8 +37,7 @@ class GamesTest extends TestCase
     {
         $response = $this
             ->actingAs(\create(User::class))
-            ->withPlaylistCache($this->playlist)
-            ->get(\route('games.index', 'rock-hard'));
+            ->get(\route('games.index', $this->playlist['id']));
 
         $response
             ->assertStatus(200)
@@ -45,11 +45,12 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    public function not_cached_playlists_will_return_not_found_error()
+    public function it_will_return_not_found_error_when_playlist_doesnt_exists()
     {
         $this->actingAs(\factory(User::class)->create());
 
-        $response = $this->get(\route('games.index', 'rock-hard'));
+        $response = $this
+            ->get(\route('games.index', 'not-a-validplaylist-id'));
 
         $response->assertStatus(404);
     }
@@ -59,9 +60,7 @@ class GamesTest extends TestCase
     {
         $this->actingAs(\create(User::class));
 
-        $response = $this
-            ->withPlaylistCache($this->playlist)
-            ->get(\route('games.index', 'rock-hard'));
+        $response = $this->get(\route('games.index', $this->playlist['id']));
 
         $response->assertSessionHas('current_playlist', $this->playlist['id']);
     }
@@ -81,12 +80,7 @@ class GamesTest extends TestCase
                 'current_playlist' => $this->playlist['id'],
                 'recently_played_tracks' => [],
             ])
-            ->withPlaylistCache($this->playlist)
-            ->withPlaylistCacheExistence($this->playlist)
-            ->withPlaylistTracksCacheRemember($this->tracks)
-            ->post(\route('games.store', 'rock-hard'), [
-                'playlist' => $this->playlist['id'],
-            ]);
+            ->post(\route('games.store', $this->playlist['id']));
 
         $response
             ->assertStatus(200)
@@ -109,13 +103,13 @@ class GamesTest extends TestCase
     /** @test */
     public function starting_a_game_with_different_playlist_than_the_one_in_session_will_fail()
     {
+        $this->expectException(SpotifyWebAPIException::class);
+
         $this->actingAs(\create(User::class));
 
         $response = $this->withoutExceptionHandling()->withSession([
             'current_playlist' => $this->playlist['id'],
-        ])->post(\route('games.store', 'rock-hard'), [
-            'playlist' => 'wrong-playlist-id',
-        ]);
+        ])->post(\route('games.store', 'wrong-playlist-id'));
 
         $response->assertStatus(404);
     }
