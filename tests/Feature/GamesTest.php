@@ -14,7 +14,7 @@ class GamesTest extends TestCase
     private $playlist;
     private $tracks;
 
-    public function setUp()
+    function setUp()
     {
         parent::setUp();
 
@@ -23,7 +23,7 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    public function guests_can_not_play_a_game()
+    function guests_can_not_play_a_game()
     {
         $response = $this->get(\route('games.create', 'rock-hard'));
 
@@ -33,7 +33,7 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    public function logged_in_users_can_play_game()
+    function logged_in_users_can_play_game()
     {
         $response = $this
             ->actingAs(\create(User::class))
@@ -45,7 +45,7 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    public function it_will_return_not_found_error_when_playlist_doesnt_exists()
+    function it_will_return_not_found_error_when_playlist_doesnt_exists()
     {
         $this->actingAs(\factory(User::class)->create());
 
@@ -56,7 +56,7 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    public function current_game_playlist_is_stored_in_session()
+    function current_game_playlist_is_stored_in_session()
     {
         $this->actingAs(\create(User::class));
 
@@ -66,7 +66,7 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    public function a_user_can_start_a_game()
+    function a_user_can_start_a_game()
     {
         $now = $this->setCarbonTest();
 
@@ -101,7 +101,7 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    public function starting_a_game_with_different_playlist_than_the_one_in_session_will_fail()
+    function starting_a_game_with_different_playlist_than_the_one_in_session_will_fail()
     {
         $this->expectException(SpotifyWebAPIException::class);
 

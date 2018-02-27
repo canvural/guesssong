@@ -24,7 +24,7 @@ class GameAnswerTest extends TestCase
     }
 
     /** @test */
-    public function guests_can_not_answer_a_game()
+    function guests_can_not_answer_a_game()
     {
         $response = $this
             ->post(\route('gameAnswers.create', [$this->playlist['id'], 'rock-hard']), [
@@ -35,7 +35,7 @@ class GameAnswerTest extends TestCase
     }
 
     /** @test */
-    public function answering_a_game_with_different_playlist_than_the_one_in_session_will_fail()
+    function answering_a_game_with_different_playlist_than_the_one_in_session_will_fail()
     {
         $this->expectException(SpotifyWebAPIException::class);
 
@@ -52,7 +52,7 @@ class GameAnswerTest extends TestCase
     }
 
     /** @test */
-    public function users_score_will_not_change_when_given_incorrect_answer()
+    function users_score_will_not_change_when_given_incorrect_answer()
     {
         /** @var User $user */
         $user = \create(User::class);
@@ -76,7 +76,7 @@ class GameAnswerTest extends TestCase
     }
 
     /** @test */
-    public function user_should_gain_score_when_answered_right()
+    function user_should_gain_score_when_answered_right()
     {
         $now = $this->setCarbonTest();
 
@@ -105,7 +105,7 @@ class GameAnswerTest extends TestCase
     }
 
     /** @test */
-    public function user_should_not_gain_score_when_answered_after_30_seconds()
+    function user_should_not_gain_score_when_answered_after_30_seconds()
     {
         $now = $this->setCarbonTest();
 
@@ -136,7 +136,7 @@ class GameAnswerTest extends TestCase
      *
      * @return Game
      */
-    private function createGameForUser($user): Game
+    function createGameForUser($user): Game
     {
         return \create(Game::class, [
             'user_id' => $user->id,

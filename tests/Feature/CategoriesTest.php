@@ -7,7 +7,7 @@ use Tests\TestCase;
 class CategoriesTest extends TestCase
 {
     /** @test */
-    public function it_will_list_all_the_categories()
+    function it_will_list_all_the_categories()
     {
         $categories = collect(\get_fake_data('categories.json'));
 
