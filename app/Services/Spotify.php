@@ -64,7 +64,7 @@ class Spotify implements MusicService
      *
      * @return array
      */
-    public function getTracksForPlaylist(array $playlist): array
+    public function getPlaylistTracks(array $playlist): array
     {
         return $this->callWithErrorHandling(function () use ($playlist) {
             return $this->api->getUserPlaylistTracks($playlist['owner']['id'], $playlist['id']);

@@ -22,7 +22,7 @@ class GameController extends Controller
      */
     public function create(Request $request, MusicService $musicService, string $playlistId)
     {
-        $userId = $this->resolveUserIdFromRequest($request);
+        $userId = $this->determineSpotifyUserIdFromRequest($request);
 
         $playlist = $musicService->getUserPlaylist($userId, $playlistId);
 
@@ -44,7 +44,7 @@ class GameController extends Controller
      */
     public function store(Request $request, MusicService $musicService, string $playlistId): JsonResponse
     {
-        $userId = $this->resolveUserIdFromRequest($request);
+        $userId = $this->determineSpotifyUserIdFromRequest($request);
 
         $playlist = $musicService->getUserPlaylist($userId, $playlistId);
 
@@ -52,7 +52,7 @@ class GameController extends Controller
             return \response()->json([], 404);
         }
 
-        $tracks = $musicService->getTracksForPlaylist($playlist);
+        $tracks = $musicService->getPlaylistTracks($playlist);
 
         /** @var Collection $tracks */
         $tracks = $musicService->filterTracks($tracks['items'], \session('recently_played_tracks', []));

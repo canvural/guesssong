@@ -6,7 +6,7 @@ interface MusicService
 {
     public function getPlaylistCategoriesForGame();
 
-    public function getTracksForPlaylist(array $playlist);
+    public function getPlaylistTracks(array $playlist);
 
     public function getUserPlaylist(string $userId, string $playlistId);
 

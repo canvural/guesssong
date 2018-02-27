@@ -38,10 +38,10 @@ class CachingSpotify implements MusicService
      *
      * @return mixed
      */
-    public function getTracksForPlaylist(array $playlist)
+    public function getPlaylistTracks(array $playlist)
     {
         return $this->cache->tags(['tracks', $playlist['id']])->remember($playlist['id'].'_tracks', self::DEFAULT_CACHING_MINUTES, function () use ($playlist) {
-            return $this->spotify->getTracksForPlaylist($playlist);
+            return $this->spotify->getPlaylistTracks($playlist);
         });
     }
 

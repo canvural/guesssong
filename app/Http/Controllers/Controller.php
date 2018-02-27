@@ -22,7 +22,7 @@ class Controller extends BaseController
         return \starts_with($request->route()->getName(), 'usergame');
     }
 
-    protected function resolveUserIdFromRequest(Request $request)
+    protected function determineSpotifyUserIdFromRequest(Request $request)
     {
         if ($request->has('u')) {
             return $request->query('u');

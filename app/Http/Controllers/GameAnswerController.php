@@ -9,13 +9,13 @@ class GameAnswerController extends Controller
 {
     public function create(Request $request, MusicService $musicService, string $playlistId)
     {
-        $playlist = $musicService->getUserPlaylist($this->resolveUserIdFromRequest($request), $playlistId);
+        $playlist = $musicService->getUserPlaylist($this->determineSpotifyUserIdFromRequest($request), $playlistId);
 
         if (! $this->isValidPlaylist($playlistId)) {
             return \response()->json([], 404);
         }
 
-        $tracks = $musicService->getTracksForPlaylist($playlist);
+        $tracks = $musicService->getPlaylistTracks($playlist);
 
         $message = 'Not correct!';
 
