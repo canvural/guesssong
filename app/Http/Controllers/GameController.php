@@ -29,7 +29,6 @@ class GameController extends Controller
         \session(['current_playlist' => $playlist['id']]);
 
         return \view('games.index')->with([
-            'playlistId' => $playlist['id'],
             'playlistImage' => $playlist['images'][0]['url'],
         ]);
     }

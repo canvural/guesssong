@@ -53,7 +53,7 @@ import axios from "axios";
 import swal from "sweetalert2";
 
 export default {
-  props: ["playlist_image", "playlist_id"],
+  props: ["playlist_image"],
   data() {
     return {
       score: 0,
@@ -68,9 +68,7 @@ export default {
   methods: {
     async startGame() {
       try {
-        var response = await axios.post(window.location.href, {
-          playlist: this.playlist_id
-        });
+        var response = await axios.post(window.location.href);
       } catch (e) {
         swal({
           type: "error",
@@ -97,8 +95,7 @@ export default {
       this.resetTimer = true;
 
       const response = await axios.post(`${window.location.href}/answer`, {
-        answer: track.id,
-        playlist: this.playlist_id
+        answer: track.id
       });
 
       if (response.data.message === "finished") {
