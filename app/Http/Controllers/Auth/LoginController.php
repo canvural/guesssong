@@ -91,14 +91,11 @@ class LoginController extends Controller
         $providerTokenField = "{$provider}_token";
         $providerRefreshTokenField = "{$provider}_refresh_token";
 
+        $socialProfile->{$providerField} = $user->id;
         $socialProfile->{$providerTokenField} = $user->token;
         $socialProfile->{$providerRefreshTokenField} = $user->refreshToken;
 
-        if (empty($socialProfile->{$providerField})) {
-            $socialProfile->{$providerField} = $user->id;
-
-            $authUser->socialLogin()->save($socialProfile);
-        }
+        $authUser->socialLogin()->save($socialProfile);
 
         return $authUser;
     }

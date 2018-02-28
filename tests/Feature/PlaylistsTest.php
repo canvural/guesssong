@@ -7,7 +7,7 @@ use Tests\TestCase;
 class PlaylistsTest extends TestCase
 {
     /** @test */
-    function it_can_list_playlists_for_a_category()
+    public function it_can_list_playlists_for_a_category()
     {
         $playlists = \get_fake_data('rock_playlists.json');
 

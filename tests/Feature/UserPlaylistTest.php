@@ -12,7 +12,7 @@ class UserPlaylistTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    function users_logged_in_with_spotify_can_see_their_own_playlists()
+    public function users_logged_in_with_spotify_can_see_their_own_playlists()
     {
         $user = \create(User::class);
         \create(SocialLogin::class, [
