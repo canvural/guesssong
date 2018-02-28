@@ -64,4 +64,9 @@ class User extends Authenticatable
     {
         return $this->games()->lastGameWithPlaylistId($playlistId)->select('score')->first()->score;
     }
+    
+    public function hasSpotify(): bool
+    {
+        return $this->socialLogin->spotify_id !== null;
+    }
 }

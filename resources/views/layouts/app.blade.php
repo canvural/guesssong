@@ -10,10 +10,11 @@
   </head>
   <body class="font-sans antialiased text-black leading-tight">
     @include('components.nav')
-    <div id="app">
+    <div id="app" class="min-h-screen">
       @yield('body')
       <flash message="{{ session('flash') }}"></flash>
     </div>
+    @include('components.footer')
     <script src="{{ mix('js/app.js') }}"></script>
   </body>
 </html>
