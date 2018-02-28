@@ -15,7 +15,8 @@ class GameController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @param string  $playlistId
+     * @param string $playlistId
+     * @param MusicService $musicService
      *
      * @return View|RedirectResponse
      */
