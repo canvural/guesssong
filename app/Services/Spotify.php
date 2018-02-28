@@ -67,42 +67,8 @@ class Spotify implements MusicService
     public function getPlaylistTracks(array $playlist): array
     {
         return $this->callWithErrorHandling(function () use ($playlist) {
-            return $this->api->getUserPlaylistTracks($playlist['owner']['id'], $playlist['id']);
+            return $this->api->getUserPlaylistTracks($playlist['owner']['id'], $playlist['id'])['items'];
         });
-    }
-
-    /**
-     * @param array $tracks
-     * @param array $recentlyPlayedTracks
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function filterTracks(array $tracks, array $recentlyPlayedTracks)
-    {
-        return \collect($tracks)
-            ->pluck('track')
-            ->reject(function ($track) {
-                return null === $track['preview_url'];
-            })
-            ->reject(function ($track) {
-                return 'track' !== $track['type'];
-            })
-            ->reject(function ($track) {
-                return empty($track['artists']);
-            })
-            ->reject(function ($track) use ($recentlyPlayedTracks) {
-                return collect($recentlyPlayedTracks)->contains($track['id']);
-            })
-            ->shuffle()
-            ->map(function ($track) {
-                return [
-                    'id' => $track['id'],
-                    'artists' => $track['artists'],
-                    'name' => $track['name'],
-                    'preview_url' => $track['preview_url'],
-                ];
-            })
-            ->take(4);
     }
 
     /**

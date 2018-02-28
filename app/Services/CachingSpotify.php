@@ -96,11 +96,6 @@ class CachingSpotify implements MusicService
         });
     }
 
-    public function filterTracks(array $tracks, array $recentlyPlayedTracks)
-    {
-        return $this->spotify->filterTracks($tracks, $recentlyPlayedTracks);
-    }
-
     /**
      * Should fetch the new access token and set it.
      * And return the new refresh token if successfull or false otherwise.
@@ -109,6 +104,6 @@ class CachingSpotify implements MusicService
      */
     public function refreshUserAccessToken()
     {
-        // TODO: Implement refreshUserAccessToken() method.
+        return $this->spotify->refreshUserAccessToken();
     }
 }

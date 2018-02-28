@@ -14,8 +14,6 @@ interface MusicService
 
     public function getCategoryPlaylists($category);
 
-    public function filterTracks(array $tracks, array $recentlyPlayedTracks);
-
     /**
      * Should fetch the new access token and set it.
      * And return the new refresh token and access token if successfull or false otherwise.
