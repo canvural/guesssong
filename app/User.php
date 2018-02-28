@@ -51,12 +51,17 @@ class User extends Authenticatable
 
         return $this;
     }
-    
-    public function startGame($playlistId)
+
+    public function startGame($playlistId): Game
     {
         return $this->games()->create([
             'score' => 0,
             'playlist_id' => $playlistId,
         ]);
+    }
+
+    public function getLastGameScore($playlistId)
+    {
+        return $this->games()->lastGameWithPlaylistId($playlistId)->select('score')->first()->score;
     }
 }
