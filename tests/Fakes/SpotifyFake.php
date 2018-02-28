@@ -14,7 +14,7 @@ class SpotifyFake implements MusicService
 
     public function getPlaylistTracks(array $playlist)
     {
-        return \get_fake_data($playlist['id'].'_tracks.json');
+        return \get_fake_data($playlist['id'].'_tracks.json')['items'];
     }
 
     public function getCategoryPlaylists($category)

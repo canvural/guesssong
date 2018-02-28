@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use SpotifyWebAPI\SpotifyWebAPIException;
 use Tests\TestCase;
 
 class GamesTest extends TestCase
@@ -14,7 +13,7 @@ class GamesTest extends TestCase
     private $playlist;
     private $tracks;
 
-    function setUp()
+    public function setUp()
     {
         parent::setUp();
 
@@ -23,7 +22,7 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    function guests_can_not_play_a_game()
+    public function guests_can_not_play_a_game()
     {
         $response = $this->get(\route('games.create', 'rock-hard'));
 
@@ -33,7 +32,7 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    function logged_in_users_can_play_game()
+    public function logged_in_users_can_play_game()
     {
         $response = $this
             ->actingAs(\create(User::class))
@@ -45,7 +44,7 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    function it_will_return_not_found_error_when_playlist_doesnt_exists()
+    public function it_will_return_not_found_error_when_playlist_doesnt_exists()
     {
         $this->actingAs(\factory(User::class)->create());
 
@@ -56,7 +55,7 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    function current_game_playlist_is_stored_in_session()
+    public function current_game_playlist_is_stored_in_session()
     {
         $this->actingAs(\create(User::class));
 
@@ -66,7 +65,7 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    function a_user_can_start_a_game()
+    public function a_user_can_start_a_game()
     {
         $now = $this->setCarbonTest();
 
@@ -101,10 +100,8 @@ class GamesTest extends TestCase
     }
 
     /** @test */
-    function starting_a_game_with_different_playlist_than_the_one_in_session_will_fail()
+    public function starting_a_game_with_different_playlist_than_the_one_in_session_will_fail()
     {
-        $this->expectException(SpotifyWebAPIException::class);
-
         $this->actingAs(\create(User::class));
 
         $response = $this->withoutExceptionHandling()->withSession([

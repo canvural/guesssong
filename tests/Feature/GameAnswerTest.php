@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Game;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use SpotifyWebAPI\SpotifyWebAPIException;
 use Tests\TestCase;
 
 class GameAnswerTest extends TestCase
@@ -24,7 +23,7 @@ class GameAnswerTest extends TestCase
     }
 
     /** @test */
-    function guests_can_not_answer_a_game()
+    public function guests_can_not_answer_a_game()
     {
         $response = $this
             ->post(\route('gameAnswers.create', [$this->playlist['id'], 'rock-hard']), [
@@ -35,10 +34,8 @@ class GameAnswerTest extends TestCase
     }
 
     /** @test */
-    function answering_a_game_with_different_playlist_than_the_one_in_session_will_fail()
+    public function answering_a_game_with_different_playlist_than_the_one_in_session_will_fail()
     {
-        $this->expectException(SpotifyWebAPIException::class);
-
         $this->actingAs(\create(User::class));
 
         $response = $this->withoutExceptionHandling()->withSession([
@@ -52,7 +49,7 @@ class GameAnswerTest extends TestCase
     }
 
     /** @test */
-    function users_score_will_not_change_when_given_incorrect_answer()
+    public function users_score_will_not_change_when_given_incorrect_answer()
     {
         /** @var User $user */
         $user = \create(User::class);
@@ -76,7 +73,7 @@ class GameAnswerTest extends TestCase
     }
 
     /** @test */
-    function user_should_gain_score_when_answered_right()
+    public function user_should_gain_score_when_answered_right()
     {
         $now = $this->setCarbonTest();
 
@@ -105,7 +102,7 @@ class GameAnswerTest extends TestCase
     }
 
     /** @test */
-    function user_should_not_gain_score_when_answered_after_30_seconds()
+    public function user_should_not_gain_score_when_answered_after_30_seconds()
     {
         $now = $this->setCarbonTest();
 
@@ -136,7 +133,7 @@ class GameAnswerTest extends TestCase
      *
      * @return Game
      */
-    function createGameForUser($user): Game
+    public function createGameForUser($user): Game
     {
         return \create(Game::class, [
             'user_id' => $user->id,
