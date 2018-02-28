@@ -107,7 +107,7 @@ class SocialLoginTest extends TestCase
         $this->app->instance(Socialite::class, $stub);
     }
 
-    private function dummyUser($overrides = [])
+    private function dummyUser(array $overrides = [])
     {
         return array_merge([
             'id' => '1',
