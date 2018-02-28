@@ -13,10 +13,6 @@
 
 Auth::routes();
 
-Route::get('/', function () {
-    dd(Socialite::driver('spotify'));
-});
-
 Route::middleware(['guest'])->group(function () {
     Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider');
     Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback');
