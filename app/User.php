@@ -67,6 +67,6 @@ class User extends Authenticatable
     
     public function hasSpotify(): bool
     {
-        return $this->socialLogin->spotify_id !== null;
+        return $this->socialLogin && $this->socialLogin->spotify_id !== null;
     }
 }
