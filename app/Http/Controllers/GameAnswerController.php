@@ -52,7 +52,7 @@ class GameAnswerController extends Controller
         }
 
         $answer = $notPlayedTracks->random();
-        $gameTracks = $allTracks->take(3)->push($answer);
+        $gameTracks = $allTracks->take(3)->push($answer)->shuffle();
 
         \session([
             'answer' => $answer['id'],
