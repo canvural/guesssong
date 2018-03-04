@@ -10,3 +10,7 @@ a:active, a:focus {
 }
 
 @tailwind utilities;
+
+.border-collapse {
+    border-collapse: collapse;
+}

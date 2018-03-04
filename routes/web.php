@@ -35,3 +35,4 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/categories', 'CategoryController@index')->name('categories.index');
 Route::get('playlists/{category}', 'PlaylistController@index')->name('playlists.index');
+Route::get('scoreboard', 'ScoreboardController@index')->name('scoreboard.index');

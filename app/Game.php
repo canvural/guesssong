@@ -30,4 +30,11 @@ class Game extends Model
             ->latest('id')
             ->limit(1);
     }
+    
+    public function scopeWithTotalScore($query)
+    {
+        return $query->selectRaw('user_id, SUM(score) as totalScore, COUNT(user_id) as gamesPlayed')
+            ->groupBy('user_id')
+            ->orderByDesc('totalScore');
+    }
 }
