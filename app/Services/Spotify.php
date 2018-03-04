@@ -107,8 +107,10 @@ class Spotify implements MusicService
     public function refreshUserAccessToken()
     {
         $session = new SpotifySession(env('SPOTIFY_CLIENT_ID'), env('SPOTIFY_CLIENT_SECRET'));
-
-        if ($session->refreshAccessToken($this->refreshToken)) {
+        
+        $success = $this->refreshToken ? $session->refreshAccessToken($this->refreshToken) : $session->requestCredentialsToken();
+        
+        if ($success) {
             $this->api->setAccessToken($session->getAccessToken());
 
             return [
@@ -130,7 +132,7 @@ class Spotify implements MusicService
             if (\str_contains($e->getMessage(), 'expired')) {
                 $updatedTokens = $this->refreshUserAccessToken();
 
-                if ($updatedTokens) {
+                if ($updatedTokens && $this->refreshToken) {
                     auth()->user()->socialLogin->update([
                         'spotify_token' => $updatedTokens['access_token'],
                         'spotify_refresh_token' => $updatedTokens['refresh_token'],
