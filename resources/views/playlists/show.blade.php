@@ -8,6 +8,9 @@
                     <img class="w-full" src="{{ $playlist['images'][0]['url'] }}" alt="{{ $playlist['name'] }}">
                     <div class="px-6 py-4">
                         <div class="font-bold text-xl mb-2 text-center">{{ $playlist['name'] }}</div>
+                        <div class="text-xs mb-2 text-center">
+                            You played this playlist {{ array_get($playlistCounts, $playlist['id'], 0) }} times
+                        </div>
                     </div>
                 </a>
             </div>

@@ -69,4 +69,17 @@ class User extends Authenticatable
     {
         return $this->socialLogin && $this->socialLogin->spotify_id !== null;
     }
+    
+    public function getPlayedPlaylistCounts()
+    {
+        return $this
+            ->games()
+            ->groupBy('playlist_id', 'user_id')
+            ->select('playlist_id', \DB::raw("COUNT(id) as playedTimes"))
+            ->get()
+            ->mapWithKeys(function ($game) {
+                return [$game->playlist_id => $game->playedTimes];
+            })
+            ->toArray();
+    }
 }

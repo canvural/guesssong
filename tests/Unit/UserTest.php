@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Game;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -66,5 +67,33 @@ class UserTest extends TestCase
         $user->addScoreForGame('playlist-1', $now->timestamp);
 
         $this->assertEquals(0, $game->fresh()->score);
+    }
+    
+    /** @test */
+    function it_can_fetch_a_list_of_playlists_and_count_of_how_many_times_its_played()
+    {
+        $user = \create(User::class);
+        $user2 = \create(User::class);
+        $gameA = \create(Game::class, [
+            'playlist_id' => 'playlist-1',
+            'user_id' => $user->id
+        ]);
+        $gameB = \create(Game::class, [
+            'playlist_id' => 'playlist-2',
+            'user_id' => $user->id
+        ]);
+        $gameC = \create(Game::class, [
+            'playlist_id' => 'playlist-1',
+            'user_id' => $user->id
+        ]);
+        $gameD = \create(Game::class, [
+            'playlist_id' => 'playlist-1',
+            'user_id' => $user2->id
+        ]);
+        
+        $this->assertEquals([
+            'playlist-1' => 2,
+            'playlist-2' => 1,
+        ], $user->getPlayedPlaylistCounts());
     }
 }
