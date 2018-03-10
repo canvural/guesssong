@@ -13,7 +13,7 @@ class UserPlaylistController extends Controller
         )->reject(function ($playlist) {
             return null === $playlist['name'] || empty($playlist['images']);
         });
-    
+
         $playlistCounts = \auth()->user() ? \auth()->user()->getPlayedPlaylistCounts() : [];
 
         return view('playlists.show')->with([
