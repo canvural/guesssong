@@ -49,19 +49,9 @@ class GamesTest extends TestCase
         $this->actingAs(\factory(User::class)->create());
 
         $response = $this
-            ->get(\route('games.create', 'not-a-validplaylist-id'));
+            ->get(\route('games.create', 'not-a-valid-playlist-id'));
 
         $response->assertStatus(404);
-    }
-
-    /** @test */
-    public function current_game_playlist_is_stored_in_session()
-    {
-        $this->actingAs(\create(User::class));
-
-        $response = $this->get(\route('games.create', $this->playlist['id']));
-
-        $response->assertSessionHas('current_playlist', $this->playlist['id']);
     }
 
     /** @test */
