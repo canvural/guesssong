@@ -24,10 +24,10 @@ class GameAnswerController extends Controller
             return \response()->json([], 404);
         }
 
-        $playlist = $musicService->getUserPlaylist($this->determineSpotifyUserIdFromRequest($request), $playlistId);
         $allTracks = $this->gameService->transformTracksForGame($musicService->getPlaylistTracks($playlist));
         $notPlayedTracks = $allTracks->reject(function ($track) {
             return collect(\session('recently_played_tracks'))->contains($track['id']);
+        $playlist = $musicService->getUserPlaylist($request->spotify_id, $playlistId);
         });
 
         $message = 'Not correct!';

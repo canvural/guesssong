@@ -22,7 +22,7 @@ class GameController extends Controller
      */
     public function create(Request $request, string $playlistId, MusicService $musicService)
     {
-        $userId = $this->determineSpotifyUserIdFromRequest($request);
+        $playlist = $musicService->getUserPlaylist($request->spotify_id, $playlistId);
 
         $playlist = $musicService->getUserPlaylist($userId, $playlistId);
 
