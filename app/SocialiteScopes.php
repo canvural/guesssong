@@ -18,6 +18,7 @@ class SocialiteScopes
     {
         return [
             'email',
+            'read_custom_friendlists',
         ];
     }
 }
