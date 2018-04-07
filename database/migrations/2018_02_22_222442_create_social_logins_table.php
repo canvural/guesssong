@@ -18,6 +18,7 @@ class CreateSocialLoginsTable extends Migration
             $table->string('facebook_id')->nullable();
             $table->string('spotify_id')->nullable();
             $table->string('facebook_token')->nullable();
+            $table->string('facebook_refresh_token')->nullable();
             $table->string('spotify_token')->nullable();
             $table->string('spotify_refresh_token')->nullable();
             $table->timestamps();
