@@ -93,7 +93,7 @@ class LoginController extends Controller
 
         $socialProfile->{$providerField} = $user->id;
         $socialProfile->{$providerTokenField} = $user->token;
-        $socialProfile->{$providerRefreshTokenField} = $user->refreshToken;
+        $socialProfile->{$providerRefreshTokenField} = $user->refreshToken ?? '';
 
         $authUser->socialLogin()->save($socialProfile);
 
