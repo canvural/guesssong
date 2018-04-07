@@ -95,8 +95,8 @@ describe ('Game', () => {
     wrapper.setData({
       gameInProgress: true,
       currentTracks: [
-        { name: 'TestTrack', artists: [{ name: 'TestArtist' }] },
-        { name: 'TestTrack2', artists: [{ name: 'TestArtist2' }, { name: 'TestArtist3' }] },
+        { name: 'TestTrack', artists: 'TestArtist' },
+        { name: 'TestTrack2', artists: 'TestArtist2, TestArtist3' },
       ]
     });
 
