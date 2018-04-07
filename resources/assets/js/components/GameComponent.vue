@@ -40,7 +40,7 @@
                         class="mt-1 bg-blue hover:bg-blue-dark text-white font-bold p-2 rounded w-full"
                         @click="checkAnswer(track)"
                     >
-                        {{ track.name }} - {{ track.artists.map((artist) => artist.name).join(', ') }}
+                        {{ track.name }} - {{ track.artists }}
                     </button>
                 </div>
             </div>

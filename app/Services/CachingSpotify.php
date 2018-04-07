@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Playlist;
 use Illuminate\Cache\Repository as Cache;
+use Illuminate\Support\Collection;
 
 class CachingSpotify implements MusicService
 {
@@ -32,15 +34,15 @@ class CachingSpotify implements MusicService
     }
 
     /**
-     * @param array $playlist
+     * @param Playlist $playlist
      *
      * @throws \BadMethodCallException
      *
-     * @return mixed
+     * @return Collection
      */
-    public function getPlaylistTracks(array $playlist)
+    public function getPlaylistTracks(Playlist $playlist): Collection
     {
-        return $this->cache->tags(['tracks', $playlist['id']])->remember($playlist['id'].'_tracks', self::DEFAULT_CACHING_MINUTES, function () use ($playlist) {
+        return $this->cache->tags(['tracks', $playlist->getId()])->remember($playlist->getId().'_tracks', self::DEFAULT_CACHING_MINUTES, function () use ($playlist) {
             return $this->spotify->getPlaylistTracks($playlist);
         });
     }
@@ -51,9 +53,9 @@ class CachingSpotify implements MusicService
      *
      * @throws \BadMethodCallException
      *
-     * @return mixed
+     * @return Playlist
      */
-    public function getUserPlaylist(string $userId, string $playlistId)
+    public function getUserPlaylist(string $userId, string $playlistId): Playlist
     {
         return $this->cache
             ->tags(
@@ -69,9 +71,9 @@ class CachingSpotify implements MusicService
      *
      * @throws \BadMethodCallException
      *
-     * @return mixed
+     * @return Collection
      */
-    public function getUserPlaylists(string $userId = 'me')
+    public function getUserPlaylists(string $userId = 'me'): Collection
     {
         return $this->cache->tags(
             ['playlists', $userId.'_playlists']
@@ -85,9 +87,9 @@ class CachingSpotify implements MusicService
      *
      * @throws \BadMethodCallException
      *
-     * @return array
+     * @return Collection
      */
-    public function getCategoryPlaylists($category)
+    public function getCategoryPlaylists($category): Collection
     {
         return $this->cache->tags(
             ['playlists', $category]

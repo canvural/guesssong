@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Playlist;
+use App\Track;
+use Illuminate\Support\Collection;
 use SpotifyWebAPI\Session as SpotifySession;
 use SpotifyWebAPI\SpotifyWebAPI;
 use SpotifyWebAPI\SpotifyWebAPIException;
@@ -14,15 +17,15 @@ class Spotify implements MusicService
     private $api;
 
     /**
-     * @var string user refresh token for access token
+     * @var string User refresh token for access token
      */
     private $refreshToken;
 
     public function __construct($accessToken, $refreshToken)
     {
         $api = new SpotifyWebAPI();
-        $api->setReturnType(SpotifyWebAPI::RETURN_ASSOC);
         $api->setAccessToken($accessToken);
+        $api->setReturnType(SpotifyWebAPI::RETURN_ASSOC);
 
         $this->api = $api;
         $this->refreshToken = $refreshToken;
@@ -33,7 +36,7 @@ class Spotify implements MusicService
      *
      * @return array
      */
-    public function getPlaylistCategoriesForGame(): array
+    public function getPlaylistCategoriesForGame()
     {
         return $this->callWithErrorHandling(function () {
             return $this->api->getCategoriesList([
@@ -48,26 +51,33 @@ class Spotify implements MusicService
      *
      * @throws SpotifyWebAPIException
      *
-     * @return array
+     * @return Collection
      */
-    public function getCategoryPlaylists($category): array
+    public function getCategoryPlaylists($category): Collection
     {
         return $this->callWithErrorHandling(function () use ($category) {
-            return $this->api->getCategoryPlaylists($category)['playlists']['items'];
+            return \collect($this->api->getCategoryPlaylists($category)['playlists']['items'])
+                ->map(function ($playlist) {
+                    return Playlist::createFromSpotifyData($playlist);
+                });
         });
     }
 
     /**
-     * @param array $playlist
+     * @param Playlist $playlist
      *
      * @throws SpotifyWebAPIException
      *
-     * @return array
+     * @return Collection
      */
-    public function getPlaylistTracks(array $playlist): array
+    public function getPlaylistTracks(Playlist $playlist): Collection
     {
         return $this->callWithErrorHandling(function () use ($playlist) {
-            return $this->api->getUserPlaylistTracks($playlist['owner']['id'], $playlist['id'])['items'];
+            return \collect(
+                $this->api->getUserPlaylistTracks($playlist->getOwnerId(), $playlist->getId())['items']
+            )->map(function ($track) {
+                return Track::createFromSpotifyData($track['track']);
+            })->filter();
         });
     }
 
@@ -77,12 +87,12 @@ class Spotify implements MusicService
      *
      * @throws SpotifyWebAPIException
      *
-     * @return array|mixed
+     * @return Playlist
      */
-    public function getUserPlaylist(string $userId, string $playlistId)
+    public function getUserPlaylist(string $userId, string $playlistId): Playlist
     {
         return $this->callWithErrorHandling(function () use ($userId, $playlistId) {
-            return $this->api->getUserPlaylist($userId, $playlistId);
+            return Playlist::createFromSpotifyData($this->api->getUserPlaylist($userId, $playlistId));
         });
     }
 
@@ -91,16 +101,18 @@ class Spotify implements MusicService
      *
      * @throws SpotifyWebAPIException
      *
-     * @return array
+     * @return Collection
      */
-    public function getUserPlaylists(string $userId = 'me')
+    public function getUserPlaylists(string $userId = 'me'): Collection
     {
         return $this->callWithErrorHandling(function () use ($userId) {
             $playlists = 'me' === $userId ?
                 $this->api->getMyPlaylists() :
                 $this->api->getUserPlaylists($userId);
 
-            return $playlists['items'];
+            return \collect($playlists['items'])->map(function ($playlist) {
+                return Playlist::createFromSpotifyData($playlist);
+            });
         });
     }
 

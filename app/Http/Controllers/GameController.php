@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\GameService;
 use App\Services\MusicService;
+use App\Track;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,12 +24,10 @@ class GameController extends Controller
     {
         $playlist = $musicService->getUserPlaylist($request->spotify_id, $playlistId);
 
-        $playlist = $musicService->getUserPlaylist($userId, $playlistId);
-
-        \session(['current_playlist' => $playlist['id']]);
+        \session(['current_playlist' => $playlist->getId()]);
 
         return \view('games.create')->with([
-            'playlistImage' => $playlist['images'][0]['url'],
+            'playlistImage' => $playlist->getImageUrl(),
         ]);
     }
 
@@ -39,27 +37,28 @@ class GameController extends Controller
      * @param Request      $request
      * @param string       $playlistId
      * @param MusicService $musicService
-     * @param GameService  $gameService
      *
      * @return JsonResponse
      */
-    public function store(Request $request, string $playlistId, MusicService $musicService, GameService $gameService): JsonResponse
+    public function store(Request $request, string $playlistId, MusicService $musicService): JsonResponse
     {
         if (! $this->isValidPlaylist($playlistId)) {
             return \response()->json([], 404);
         }
 
-        $playlist = $musicService->getUserPlaylist($this->determineSpotifyUserIdFromRequest($request), $playlistId);
-        $allTracks = $gameService->transformTracksForGame($musicService->getPlaylistTracks($playlist));
-        $gameTracks = $allTracks->take(4);
+        $gameTracks = $musicService->getPlaylistTracks(
+            $musicService->getUserPlaylist($request->spotify_id, $playlistId)
+        )->take(4);
+
+        /** @var Track $answer */
         $answer = $gameTracks->random();
 
-        $this->setGameSession($answer['id']);
+        $this->setGameSession($answer->getId());
         $request->user()->startGame($playlistId);
 
         return \response()->json([
             'tracks' => $gameTracks,
-            'current_song_url' => $answer['preview_url'],
+            'current_song_url' => $answer->getPreviewUrl(),
         ], 200);
     }
 

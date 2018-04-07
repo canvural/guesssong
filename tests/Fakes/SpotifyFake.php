@@ -2,7 +2,10 @@
 
 namespace Tests\Fakes;
 
+use App\Playlist;
 use App\Services\MusicService;
+use App\Track;
+use Illuminate\Support\Collection;
 use SpotifyWebAPI\SpotifyWebAPIException;
 
 class SpotifyFake implements MusicService
@@ -12,14 +15,20 @@ class SpotifyFake implements MusicService
         return get_fake_data('categories.json');
     }
 
-    public function getPlaylistTracks(array $playlist)
+    public function getPlaylistTracks(Playlist $playlist): Collection
     {
-        return \get_fake_data($playlist['id'].'_tracks.json')['items'];
+        return collect(
+            get_fake_data($playlist->getId().'_tracks.json')['items']
+        )->map(function ($track) {
+            return Track::createFromSpotifyData($track['track']);
+        })->filter();
     }
 
-    public function getCategoryPlaylists($category)
+    public function getCategoryPlaylists($category): Collection
     {
-        return \get_fake_data($category.'_playlists.json');
+        return collect(get_fake_data($category.'_playlists.json'))->map(function ($playlist) {
+            return Playlist::createFromSpotifyData($playlist);
+        });
     }
 
     public function filterTracks(array $tracks, array $recentlyPlayedTracks)
@@ -56,22 +65,24 @@ class SpotifyFake implements MusicService
      *
      * @throws SpotifyWebAPIException
      *
-     * @return mixed
+     * @return Playlist
      */
-    public function getUserPlaylist(string $userId, string $playlistId)
+    public function getUserPlaylist(string $userId, string $playlistId): Playlist
     {
-        $playlist = \get_playlist('rock-hard');
+        $playlist = Playlist::createFromSpotifyData(get_playlist('rock-hard'));
 
-        if ($playlist['id'] !== $playlistId) {
+        if ($playlist->getId() !== $playlistId) {
             throw new SpotifyWebAPIException('Not found');
         }
 
         return $playlist;
     }
 
-    public function getUserPlaylists(string $userId = 'me')
+    public function getUserPlaylists(string $userId = 'me'): Collection
     {
-        return \get_fake_data('user_playlists.json');
+        return collect(get_fake_data('user_playlists.json'))->map(function ($playlist) {
+            return Playlist::createFromSpotifyData($playlist);
+        });
     }
 
     /**

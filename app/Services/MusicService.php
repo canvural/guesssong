@@ -2,17 +2,20 @@
 
 namespace App\Services;
 
+use App\Playlist;
+use Illuminate\Support\Collection;
+
 interface MusicService
 {
     public function getPlaylistCategoriesForGame();
 
-    public function getPlaylistTracks(array $playlist);
+    public function getPlaylistTracks(Playlist $playlist): Collection;
 
-    public function getUserPlaylist(string $userId, string $playlistId);
+    public function getUserPlaylist(string $userId, string $playlistId): Playlist;
 
-    public function getUserPlaylists(string $userId = 'me');
+    public function getUserPlaylists(string $userId = 'me'): Collection;
 
-    public function getCategoryPlaylists($category);
+    public function getCategoryPlaylists($category): Collection;
 
     /**
      * Should fetch the new access token and set it.

@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Game;
+use App\Playlist;
+use App\Track;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -18,15 +20,17 @@ class GameAnswerTest extends TestCase
     {
         parent::setUp();
 
-        $this->playlist = \get_playlist('rock-hard');
-        $this->tracks = \get_fake_data($this->playlist['id'].'_tracks.json');
+        $this->playlist = Playlist::createFromSpotifyData(get_playlist('rock-hard'));
+        $this->tracks = collect(get_fake_data($this->playlist->getId().'_tracks.json')['items'])->map(function ($track) {
+            return Track::createFromSpotifyData($track['track']);
+        })->filter();
     }
 
     /** @test */
     public function guests_can_not_answer_a_game()
     {
         $response = $this
-            ->post(\route('gameAnswers.create', [$this->playlist['id'], 'rock-hard']), [
+            ->post(\route('gameAnswers.create', [$this->playlist->getId(), 'rock-hard']), [
                 'answer' => 'an-answer',
             ]);
 
@@ -40,7 +44,7 @@ class GameAnswerTest extends TestCase
 
         $response = $this->withoutExceptionHandling()->withSession([
             'answer' => 'correct-answer',
-            'current_playlist' => $this->playlist['id'],
+            'current_playlist' => $this->playlist->getId(),
         ])->post(\route('gameAnswers.create', ['not-valid-playlist-id', 'rock-hard']), [
             'answer' => 'an-answer',
         ]);
@@ -63,9 +67,9 @@ class GameAnswerTest extends TestCase
             ->withSession([
                 'answer' => 'correct-answer',
                 'recently_played_tracks' => [],
-                'current_playlist' => $this->playlist['id'],
+                'current_playlist' => $this->playlist->getId(),
             ])
-            ->post(\route('gameAnswers.create', [$this->playlist['id'], 'rock-hard']), [
+            ->post(\route('gameAnswers.create', [$this->playlist->getId(), 'rock-hard']), [
                 'answer' => 'incorrect-answer',
             ]);
 
@@ -89,10 +93,10 @@ class GameAnswerTest extends TestCase
                 'answer' => 'correct-answer',
                 'recently_played_tracks' => [],
                 'last_game_answer_time' => $now->timestamp,
-                'current_playlist' => $this->playlist['id'],
+                'current_playlist' => $this->playlist->getId(),
             ])
             ->progressTime(0, 5)
-            ->post(\route('gameAnswers.create', [$this->playlist['id'], 'rock-hard']), [
+            ->post(\route('gameAnswers.create', [$this->playlist->getId(), 'rock-hard']), [
                 'answer' => 'correct-answer',
             ])
             ->assertStatus(200);
@@ -118,14 +122,39 @@ class GameAnswerTest extends TestCase
                 'answer' => 'correct-answer',
                 'recently_played_tracks' => [],
                 'last_game_answer_time' => $now->timestamp,
-                'current_playlist' => $this->playlist['id'],
+                'current_playlist' => $this->playlist->getId(),
             ])
             ->progressTime(0, 31)
-            ->post(\route('gameAnswers.create', [$this->playlist['id'], 'rock-hard']), [
+            ->post(\route('gameAnswers.create', [$this->playlist->getId(), 'rock-hard']), [
                 'answer' => 'correct-answer',
             ]);
 
         $this->assertEquals($usersGame->score, $usersGame->fresh()->score);
+    }
+
+    /** @test */
+    public function it_should_not_have_duplicate_tracks_in_game_tracks()
+    {
+        $now = $this->setCarbonTest();
+
+        /** @var User $user */
+        $user = \create(User::class);
+
+        $usersGame = $this->createGameForUser($user);
+
+        $response = $this
+            ->withoutExceptionHandling()
+            ->actingAs($user)
+            ->withSession([
+                'recently_played_tracks' => [],
+                'last_game_answer_time' => $now->timestamp,
+                'current_playlist' => $this->playlist->getId(),
+            ])
+            ->post(\route('gameAnswers.create', [$this->playlist->getId(), 'rock-hard']), [
+                'answer' => 'correct-answer',
+            ]);
+
+        //\dd($response->original);
     }
 
     /**
@@ -138,7 +167,7 @@ class GameAnswerTest extends TestCase
         return \create(Game::class, [
             'user_id' => $user->id,
             'score' => 0,
-            'playlist_id' => $this->playlist['id'],
+            'playlist_id' => $this->playlist->getId(),
         ]);
     }
 }

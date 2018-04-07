@@ -11,7 +11,7 @@ class UserPlaylistController extends Controller
         $playlists = collect(
             $musicService->getUserPlaylists()
         )->reject(function ($playlist) {
-            return null === $playlist['name'] || empty($playlist['images']);
+            return null === $playlist->getName() || empty($playlist->getImageUrl());
         });
 
         $playlistCounts = \auth()->user() ? \auth()->user()->getPlayedPlaylistCounts() : [];
