@@ -47,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
         $request = $app->make(Request::class);
         $user = $request->user();
 
-        if ($user) {
+        if ($user && $user->hasSpotify()) {
             $accessToken = $user->socialLogin->spotify_token;
             $refreshToken = $user->socialLogin->spotify_refresh_token;
         } else {
