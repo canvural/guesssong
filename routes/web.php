@@ -22,7 +22,7 @@ Route::group(['prefix' => 'me', 'middleware' => 'auth'], function () {
     Route::get('playlists', 'UserPlaylistController@index')->name('userplaylists.index');
 });
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'spotify.id'])->group(function () {
     Route::get('game/{playlistId}/{playlistSlug?}', 'GameController@create')->name('games.create');
     Route::get('me/game/{playlistId}/{playlistSlug?}', 'GameController@create')->name('usergames.create');
 
