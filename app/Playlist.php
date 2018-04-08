@@ -76,7 +76,7 @@ class Playlist implements Jsonable
         if (null === $data['name'] || empty($data['images'])) {
             return null;
         }
-        
+    
         return new self(
             $data['id'],
             $data['name'],
