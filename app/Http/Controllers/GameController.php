@@ -48,7 +48,7 @@ class GameController extends Controller
 
         $gameTracks = $musicService->getPlaylistTracks(
             $musicService->getUserPlaylist($request->spotify_id, $playlistId)
-        )->take(4);
+        )->shuffle()->take(4);
 
         /** @var Track $answer */
         $answer = $gameTracks->random();
