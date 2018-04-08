@@ -8,13 +8,9 @@ class UserPlaylistController extends Controller
 {
     public function index(MusicService $musicService)
     {
-        $playlists = collect(
-            $musicService->getUserPlaylists()
-        )->reject(function ($playlist) {
-            return null === $playlist->getName() || empty($playlist->getImageUrl());
-        });
+        $playlists = $musicService->getUserPlaylists();
 
-        $playlistCounts = \auth()->user() ? \auth()->user()->getPlayedPlaylistCounts() : [];
+        $playlistCounts = \auth()->user()->getPlayedPlaylistCounts();
 
         return view('playlists.show')->with([
             'playlists' => $playlists,

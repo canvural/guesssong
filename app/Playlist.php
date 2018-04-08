@@ -65,14 +65,18 @@ class Playlist implements Jsonable
     {
         return $this->imageUrl;
     }
-
+    
     /**
      * @param array $data
      *
-     * @return Playlist
+     * @return Playlist|null
      */
-    public static function createFromSpotifyData(array $data): Playlist
+    public static function createFromSpotifyData(array $data): ?Playlist
     {
+        if (null === $data['name'] || empty($data['images'])) {
+            return null;
+        }
+        
         return new self(
             $data['id'],
             $data['name'],
