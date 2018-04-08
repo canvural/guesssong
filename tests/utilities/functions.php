@@ -9,9 +9,9 @@ function get_playlist(string $name)
 {
     $playlists = get_fake_data('rock_playlists.json');
 
-    return collect($playlists)->filter(function ($playlist) use ($name) {
+    return collect($playlists)->first(function ($playlist) use ($name) {
         return \str_slug($playlist['name']) === \str_slug($name);
-    })->first();
+    });
 }
 
 function create($class, array $attributes = [], $times = null)

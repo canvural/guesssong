@@ -2,23 +2,25 @@
 
 namespace Tests\Feature;
 
+use App\Playlist;
+use App\Track;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class GamesTest extends TestCase
 {
     use RefreshDatabase;
 
+    /** @var Playlist */
     private $playlist;
-    private $tracks;
 
     public function setUp()
     {
         parent::setUp();
-
-        $this->playlist = \get_playlist('rock-hard');
-        $this->tracks = \get_fake_data($this->playlist['id'].'_tracks.json');
+    
+        $this->playlist = Playlist::createFromSpotifyData(get_playlist('rock-hard'));
     }
 
     /** @test */
@@ -36,11 +38,11 @@ class GamesTest extends TestCase
     {
         $response = $this
             ->actingAs(\create(User::class))
-            ->get(\route('games.create', $this->playlist['id']));
+            ->get(\route('games.create', $this->playlist->getId()));
 
         $response
             ->assertStatus(200)
-            ->assertSessionHas('current_playlist', $this->playlist['id']);
+            ->assertSessionHas('current_playlist', $this->playlist->getId());
     }
 
     /** @test */
@@ -61,20 +63,19 @@ class GamesTest extends TestCase
 
         $user = \create(User::class);
 
-        $this->actingAs($user);
-
         $response = $this
+            ->actingAs($user)
             ->withoutExceptionHandling()
             ->withSession([
-                'current_playlist' => $this->playlist['id'],
+                'current_playlist' => $this->playlist->getId(),
                 'recently_played_tracks' => [],
             ])
-            ->post(\route('games.store', $this->playlist['id']));
+            ->post(\route('games.store', $this->playlist->getId()));
 
         $response
             ->assertStatus(200)
             ->assertSessionHas('answer')
-            ->assertSessionHas('current_playlist', $this->playlist['id'])
+            ->assertSessionHas('current_playlist', $this->playlist->getId())
             ->assertSessionHas('last_game_answer_time', $now->timestamp)
             ->assertSessionHas('recently_played_tracks')
             ->assertJsonStructure([
@@ -85,7 +86,7 @@ class GamesTest extends TestCase
         $this->assertDatabaseHas('games', [
             'score' => 0,
             'user_id' => $user->id,
-            'playlist_id' => $this->playlist['id'],
+            'playlist_id' => $this->playlist->getId(),
         ]);
     }
 
@@ -95,7 +96,7 @@ class GamesTest extends TestCase
         $this->actingAs(\create(User::class));
 
         $response = $this->withoutExceptionHandling()->withSession([
-            'current_playlist' => $this->playlist['id'],
+            'current_playlist' => $this->playlist->getId(),
         ])->post(\route('games.store', 'wrong-playlist-id'));
 
         $response->assertStatus(404);
