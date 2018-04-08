@@ -19,7 +19,7 @@ class GameAnswerController extends Controller
         $allTracks = $musicService->getPlaylistTracks($playlist);
         $notPlayedTracks = $allTracks->reject(function (Track $track) {
             return \collect(\session('recently_played_tracks'))->contains($track->getId());
-        });
+        })->shuffle();
 
         $message = 'Not correct!';
 
@@ -35,7 +35,12 @@ class GameAnswerController extends Controller
 
         /** @var Track $answer */
         $answer = $notPlayedTracks->random();
-        $gameTracks = $allTracks->take(3)->push($answer)->shuffle();
+        $gameTracks = $allTracks
+            ->except($answer->getId())
+            ->shuffle()
+            ->take(3)
+            ->push($answer)
+            ->shuffle();
 
         \session([
             'answer' => $answer->getId(),

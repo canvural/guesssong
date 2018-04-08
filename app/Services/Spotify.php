@@ -77,7 +77,9 @@ class Spotify implements MusicService
                 $this->api->getUserPlaylistTracks($playlist->getOwnerId(), $playlist->getId())['items']
             )->map(function ($track) {
                 return Track::createFromSpotifyData($track['track']);
-            })->filter();
+            })->filter()->mapWithKeys(function (Track $track) {
+                return [$track->getId() => $track];
+            });
         });
     }
 
@@ -112,7 +114,7 @@ class Spotify implements MusicService
 
             return \collect($playlists['items'])->map(function ($playlist) {
                 return Playlist::createFromSpotifyData($playlist);
-            });
+            })->filter();
         });
     }
 
