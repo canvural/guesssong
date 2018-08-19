@@ -29,8 +29,8 @@ Route::middleware(['auth', 'spotify.id'])->group(function () {
     Route::post('game/{playlistId}/{playlistSlug?}', 'GameController@store')->name('games.store');
     Route::post('me/game/{playlistId}/{playlistSlug?}', 'GameController@store')->name('usergames.store');
 
-    Route::post('game/{playlistId}/{playlistSlug?}/answer', 'GameAnswerController@create')->name('gameAnswers.create');
-    Route::post('me/game/{playlistId}/{playlistSlug?}/answer', 'GameAnswerController@create')->name('usergameAnswers.create');
+    Route::post('game/{playlistId}/{playlistSlug?}/answer', 'GameAnswerController@store')->name('gameAnswers.store');
+    Route::post('me/game/{playlistId}/{playlistSlug?}/answer', 'GameAnswerController@store')->name('usergameAnswers.store');
 });
 
 Route::get('/categories', 'CategoryController@index')->name('categories.index');

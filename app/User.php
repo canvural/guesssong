@@ -5,6 +5,14 @@ namespace App;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * App\User
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Game[] $games
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read \App\SocialLogin $socialLogin
+ * @mixin \Eloquent
+ */
 class User extends Authenticatable
 {
     use Notifiable;

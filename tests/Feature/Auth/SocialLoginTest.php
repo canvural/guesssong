@@ -72,7 +72,7 @@ class SocialLoginTest extends TestCase
     {
         return [
             ['spotify', 'https://accounts.spotify.com/authorize'],
-            ['facebook', 'https://www.facebook.com/v2.10/dialog/oauth'],
+            ['facebook', 'https://www.facebook.com/v3.0/dialog/oauth'],
         ];
     }
 

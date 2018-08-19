@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class GameAnswerController extends Controller
 {
-    public function create(Request $request, string $playlistId, MusicService $musicService)
+    public function store(Request $request, string $playlistId, MusicService $musicService)
     {
         if (! $this->isValidPlaylist($playlistId)) {
             return \response()->json([], 404);

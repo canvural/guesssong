@@ -30,7 +30,7 @@ class GameAnswerTest extends TestCase
     public function guests_can_not_answer_a_game()
     {
         $response = $this
-            ->post(\route('gameAnswers.create', [$this->playlist->getId(), 'rock-hard']), [
+            ->post(\route('gameAnswers.store', [$this->playlist->getId(), 'rock-hard']), [
                 'answer' => 'an-answer',
             ]);
 
@@ -45,7 +45,7 @@ class GameAnswerTest extends TestCase
         $response = $this->withoutExceptionHandling()->withSession([
             'answer' => 'correct-answer',
             'current_playlist' => $this->playlist->getId(),
-        ])->post(\route('gameAnswers.create', ['not-valid-playlist-id', 'rock-hard']), [
+        ])->post(\route('gameAnswers.store', ['not-valid-playlist-id', 'rock-hard']), [
             'answer' => 'an-answer',
         ]);
 
@@ -69,7 +69,7 @@ class GameAnswerTest extends TestCase
                 'recently_played_tracks' => [],
                 'current_playlist' => $this->playlist->getId(),
             ])
-            ->post(\route('gameAnswers.create', [$this->playlist->getId(), 'rock-hard']), [
+            ->post(\route('gameAnswers.store', [$this->playlist->getId(), 'rock-hard']), [
                 'answer' => 'incorrect-answer',
             ]);
 
@@ -96,7 +96,7 @@ class GameAnswerTest extends TestCase
                 'current_playlist' => $this->playlist->getId(),
             ])
             ->progressTime(0, 5)
-            ->post(\route('gameAnswers.create', [$this->playlist->getId(), 'rock-hard']), [
+            ->post(\route('gameAnswers.store', [$this->playlist->getId(), 'rock-hard']), [
                 'answer' => 'correct-answer',
             ])
             ->assertStatus(200);
@@ -125,7 +125,7 @@ class GameAnswerTest extends TestCase
                 'current_playlist' => $this->playlist->getId(),
             ])
             ->progressTime(0, 31)
-            ->post(\route('gameAnswers.create', [$this->playlist->getId(), 'rock-hard']), [
+            ->post(\route('gameAnswers.store', [$this->playlist->getId(), 'rock-hard']), [
                 'answer' => 'correct-answer',
             ]);
 
@@ -150,7 +150,7 @@ class GameAnswerTest extends TestCase
                 'last_game_answer_time' => $now->timestamp,
                 'current_playlist' => $this->playlist->getId(),
             ])
-            ->post(\route('gameAnswers.create', [$this->playlist->getId(), 'rock-hard']), [
+            ->post(\route('gameAnswers.store', [$this->playlist->getId(), 'rock-hard']), [
                 'answer' => 'correct-answer',
             ]);
 

@@ -1,0 +1,1095 @@
+Escaped mutants:
+================
+
+
+1) /home/can/code/guessong/app/Console/Kernel.php:34    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+      */
+     protected function commands()
+     {
+-        $this->load(__DIR__ . '/Commands');
++        
+         require base_path('routes/console.php');
+     }
+ }
+
+
+2) /home/can/code/guessong/app/Exceptions/Handler.php:41    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+      */
+     public function report(Exception $exception)
+     {
+-        parent::report($exception);
++        
+     }
+     /**
+      * Render an exception into an HTTP response.
+
+
+3) /home/can/code/guessong/app/Http/Controllers/Auth/LoginController.php:39    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+      */
+     public function __construct()
+     {
+-        $this->middleware('guest')->except('logout');
++        
+     }
+     /**
+      * Redirect the user to the provider authentication page.
+
+
+4) /home/can/code/guessong/app/Http/Controllers/Auth/LoginController.php:49    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+      *
+      * @return RedirectResponse
+      */
+-    public function redirectToProvider($provider) : RedirectResponse
++    protected function redirectToProvider($provider) : RedirectResponse
+     {
+         return \Socialite::driver($provider)->scopes(SocialiteScopes::$provider())->redirect();
+     }
+
+
+5) /home/can/code/guessong/app/Http/Controllers/Auth/LoginController.php:61    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+      *
+      * @return RedirectResponse
+      */
+-    public function handleProviderCallback($provider) : RedirectResponse
++    protected function handleProviderCallback($provider) : RedirectResponse
+     {
+         $user = \Socialite::driver($provider)->user();
+         $authUser = $this->findOrCreateUser($user, $provider);
+
+
+6) /home/can/code/guessong/app/Http/Controllers/Auth/LoginController.php:67    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+     {
+         $user = \Socialite::driver($provider)->user();
+         $authUser = $this->findOrCreateUser($user, $provider);
+-        \Auth::login($authUser, true);
++        
+         return redirect($this->redirectTo);
+     }
+     /**
+
+
+7) /home/can/code/guessong/app/Http/Controllers/Auth/LoginController.php:67    [M] TrueValue
+
+--- Original
++++ New
+@@ @@
+     {
+         $user = \Socialite::driver($provider)->user();
+         $authUser = $this->findOrCreateUser($user, $provider);
+-        \Auth::login($authUser, true);
++        \Auth::login($authUser, false);
+         return redirect($this->redirectTo);
+     }
+     /**
+
+
+8) /home/can/code/guessong/app/Http/Controllers/Auth/LoginController.php:81    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+      *
+      * @return User
+      */
+-    public function findOrCreateUser($user, $provider) : User
++    protected function findOrCreateUser($user, $provider) : User
+     {
+         $authUser = User::firstOrCreate(['email' => $user->email], ['name' => $user->name]);
+         $socialProfile = $authUser->socialLogin ?: new SocialLogin();
+
+
+9) /home/can/code/guessong/app/Http/Controllers/Auth/RegisterController.php:37    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+      */
+     public function __construct()
+     {
+-        $this->middleware('guest');
++        
+     }
+     /**
+      * Get a validator for an incoming registration request.
+
+
+10) /home/can/code/guessong/app/Http/Controllers/Auth/RegisterController.php:47    [M] ProtectedVisibility
+
+--- Original
++++ New
+@@ @@
+      *
+      * @return \Illuminate\Contracts\Validation\Validator
+      */
+-    protected function validator(array $data)
++    private function validator(array $data)
+     {
+         return Validator::make($data, ['name' => 'required|string|max:255', 'email' => 'required|string|email|max:255|unique:users', 'password' => 'required|string|min:6|confirmed']);
+     }
+
+
+11) /home/can/code/guessong/app/Http/Controllers/Auth/RegisterController.php:63    [M] ProtectedVisibility
+
+--- Original
++++ New
+@@ @@
+      *
+      * @return \App\User
+      */
+-    protected function create(array $data)
++    private function create(array $data)
+     {
+         return User::create(['name' => $data['name'], 'email' => $data['email'], 'password' => bcrypt($data['password'])]);
+     }
+ }
+
+12) /home/can/code/guessong/app/Http/Controllers/CategoryController.php:17    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+      *
+      * @return View
+      */
+-    public function index(MusicService $musicService) : View
++    protected function index(MusicService $musicService) : View
+     {
+         $categories = collect($musicService->getPlaylistCategoriesForGame())->shuffle();
+         return view('home')->with(compact('categories'));
+     }
+
+13) /home/can/code/guessong/app/Http/Controllers/Controller.php:17    [M] IdenticalEqual
+
+--- Original
++++ New
+@@ @@
+     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+     protected function isValidPlaylist(string $playlistId) : bool
+     {
+-        return \session('current_playlist') === $playlistId;
++        return \session('current_playlist') == $playlistId;
+     }
+     protected function isUserGame(Request $request) : bool
+     {
+
+
+14) /home/can/code/guessong/app/Http/Controllers/GameAnswerController.php:12    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+ use Illuminate\Http\Request;
+ class GameAnswerController extends Controller
+ {
+-    public function store(Request $request, string $playlistId, MusicService $musicService)
++    protected function store(Request $request, string $playlistId, MusicService $musicService)
+     {
+         if (!$this->isValidPlaylist($playlistId)) {
+             return \response()->json([], 404);
+
+
+15) /home/can/code/guessong/app/Http/Controllers/GameAnswerController.php:26    [M] IdenticalEqual
+
+--- Original
++++ New
+@@ @@
+             return \collect(\session('recently_played_tracks'))->contains($track->getId());
+         })->shuffle();
+         $message = 'Not correct!';
+-        if (session('answer') === $request->input('answer')) {
++        if (session('answer') == $request->input('answer')) {
+             $message = 'Correct!';
+             $request->user()->addScoreForGame($playlist->getId(), \session('last_game_answer_time'));
+         }
+
+
+16) /home/can/code/guessong/app/Http/Controllers/GameAnswerController.php:41    [M] DecrementInteger
+
+--- Original
++++ New
+@@ @@
+         }
+         /** @var Track $answer */
+         $answer = $notPlayedTracks->random();
+-        $gameTracks = $allTracks->except($answer->getId())->shuffle()->take(3)->push($answer)->shuffle();
++        $gameTracks = $allTracks->except($answer->getId())->shuffle()->take(2)->push($answer)->shuffle();
+         \session(['answer' => $answer->getId(), 'current_playlist' => $playlist->getId(), 'last_game_answer_time' => \now()->timestamp]);
+         \session()->push('recently_played_tracks', $answer->getId());
+         return \response()->json(['message' => $message, 'tracks' => $gameTracks, 'current_song_url' => $answer->getPreviewUrl(), 'score' => $request->user()->getLastGameScore($playlist->getId())]);
+
+
+17) /home/can/code/guessong/app/Http/Controllers/GameAnswerController.php:41    [M] IncrementInteger
+
+--- Original
++++ New
+@@ @@
+         }
+         /** @var Track $answer */
+         $answer = $notPlayedTracks->random();
+-        $gameTracks = $allTracks->except($answer->getId())->shuffle()->take(3)->push($answer)->shuffle();
++        $gameTracks = $allTracks->except($answer->getId())->shuffle()->take(4)->push($answer)->shuffle();
+         \session(['answer' => $answer->getId(), 'current_playlist' => $playlist->getId(), 'last_game_answer_time' => \now()->timestamp]);
+         \session()->push('recently_played_tracks', $answer->getId());
+         return \response()->json(['message' => $message, 'tracks' => $gameTracks, 'current_song_url' => $answer->getPreviewUrl(), 'score' => $request->user()->getLastGameScore($playlist->getId())]);
+
+
+18) /home/can/code/guessong/app/Http/Controllers/GameAnswerController.php:45    [M] FunctionCallRemoval
+
+--- Original
++++ New
+@@ @@
+         /** @var Track $answer */
+         $answer = $notPlayedTracks->random();
+         $gameTracks = $allTracks->except($answer->getId())->shuffle()->take(3)->push($answer)->shuffle();
+-        \session(['answer' => $answer->getId(), 'current_playlist' => $playlist->getId(), 'last_game_answer_time' => \now()->timestamp]);
++        
+         \session()->push('recently_played_tracks', $answer->getId());
+         return \response()->json(['message' => $message, 'tracks' => $gameTracks, 'current_song_url' => $answer->getPreviewUrl(), 'score' => $request->user()->getLastGameScore($playlist->getId())]);
+     }
+
+
+19) /home/can/code/guessong/app/Http/Controllers/GameAnswerController.php:46    [M] ArrayItem
+
+--- Original
++++ New
+@@ @@
+         /** @var Track $answer */
+         $answer = $notPlayedTracks->random();
+         $gameTracks = $allTracks->except($answer->getId())->shuffle()->take(3)->push($answer)->shuffle();
+-        \session(['answer' => $answer->getId(), 'current_playlist' => $playlist->getId(), 'last_game_answer_time' => \now()->timestamp]);
++        \session(['answer' > $answer->getId(), 'current_playlist' => $playlist->getId(), 'last_game_answer_time' => \now()->timestamp]);
+         \session()->push('recently_played_tracks', $answer->getId());
+         return \response()->json(['message' => $message, 'tracks' => $gameTracks, 'current_song_url' => $answer->getPreviewUrl(), 'score' => $request->user()->getLastGameScore($playlist->getId())]);
+     }
+
+
+20) /home/can/code/guessong/app/Http/Controllers/GameAnswerController.php:47    [M] ArrayItem
+
+--- Original
++++ New
+@@ @@
+         /** @var Track $answer */
+         $answer = $notPlayedTracks->random();
+         $gameTracks = $allTracks->except($answer->getId())->shuffle()->take(3)->push($answer)->shuffle();
+-        \session(['answer' => $answer->getId(), 'current_playlist' => $playlist->getId(), 'last_game_answer_time' => \now()->timestamp]);
++        \session(['answer' => $answer->getId(), 'current_playlist' > $playlist->getId(), 'last_game_answer_time' => \now()->timestamp]);
+         \session()->push('recently_played_tracks', $answer->getId());
+         return \response()->json(['message' => $message, 'tracks' => $gameTracks, 'current_song_url' => $answer->getPreviewUrl(), 'score' => $request->user()->getLastGameScore($playlist->getId())]);
+     }
+
+
+21) /home/can/code/guessong/app/Http/Controllers/GameAnswerController.php:48    [M] ArrayItem
+
+--- Original
++++ New
+@@ @@
+         /** @var Track $answer */
+         $answer = $notPlayedTracks->random();
+         $gameTracks = $allTracks->except($answer->getId())->shuffle()->take(3)->push($answer)->shuffle();
+-        \session(['answer' => $answer->getId(), 'current_playlist' => $playlist->getId(), 'last_game_answer_time' => \now()->timestamp]);
++        \session(['answer' => $answer->getId(), 'current_playlist' => $playlist->getId(), 'last_game_answer_time' > \now()->timestamp]);
+         \session()->push('recently_played_tracks', $answer->getId());
+         return \response()->json(['message' => $message, 'tracks' => $gameTracks, 'current_song_url' => $answer->getPreviewUrl(), 'score' => $request->user()->getLastGameScore($playlist->getId())]);
+     }
+
+
+22) /home/can/code/guessong/app/Http/Controllers/GameAnswerController.php:51    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+         $answer = $notPlayedTracks->random();
+         $gameTracks = $allTracks->except($answer->getId())->shuffle()->take(3)->push($answer)->shuffle();
+         \session(['answer' => $answer->getId(), 'current_playlist' => $playlist->getId(), 'last_game_answer_time' => \now()->timestamp]);
+-        \session()->push('recently_played_tracks', $answer->getId());
++        
+         return \response()->json(['message' => $message, 'tracks' => $gameTracks, 'current_song_url' => $answer->getPreviewUrl(), 'score' => $request->user()->getLastGameScore($playlist->getId())]);
+     }
+     /**
+
+
+23) /home/can/code/guessong/app/Http/Controllers/GameAnswerController.php:56    [M] ArrayItem
+
+--- Original
++++ New
+@@ @@
+         $gameTracks = $allTracks->except($answer->getId())->shuffle()->take(3)->push($answer)->shuffle();
+         \session(['answer' => $answer->getId(), 'current_playlist' => $playlist->getId(), 'last_game_answer_time' => \now()->timestamp]);
+         \session()->push('recently_played_tracks', $answer->getId());
+-        return \response()->json(['message' => $message, 'tracks' => $gameTracks, 'current_song_url' => $answer->getPreviewUrl(), 'score' => $request->user()->getLastGameScore($playlist->getId())]);
++        return \response()->json(['message' => $message, 'tracks' => $gameTracks, 'current_song_url' > $answer->getPreviewUrl(), 'score' => $request->user()->getLastGameScore($playlist->getId())]);
+     }
+     /**
+      * @return JsonResponse
+
+
+24) /home/can/code/guessong/app/Http/Controllers/GameAnswerController.php:57    [M] ArrayItem
+
+--- Original
++++ New
+@@ @@
+         $gameTracks = $allTracks->except($answer->getId())->shuffle()->take(3)->push($answer)->shuffle();
+         \session(['answer' => $answer->getId(), 'current_playlist' => $playlist->getId(), 'last_game_answer_time' => \now()->timestamp]);
+         \session()->push('recently_played_tracks', $answer->getId());
+-        return \response()->json(['message' => $message, 'tracks' => $gameTracks, 'current_song_url' => $answer->getPreviewUrl(), 'score' => $request->user()->getLastGameScore($playlist->getId())]);
++        return \response()->json(['message' => $message, 'tracks' => $gameTracks, 'current_song_url' => $answer->getPreviewUrl(), 'score' > $request->user()->getLastGameScore($playlist->getId())]);
+     }
+     /**
+      * @return JsonResponse
+
+
+25) /home/can/code/guessong/app/Http/Controllers/GameController.php:13    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+ use Illuminate\View\View;
+ class GameController extends Controller
+ {
+-    public function create(Request $request, string $playlistId, MusicService $musicService) : View
++    protected function create(Request $request, string $playlistId, MusicService $musicService) : View
+     {
+         $playlist = $musicService->getUserPlaylist($request->spotify_id, $playlistId);
+         \session(['current_playlist' => $playlist->getId()]);
+
+
+26) /home/can/code/guessong/app/Http/Controllers/GameController.php:33    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+      *
+      * @return JsonResponse
+      */
+-    public function store(Request $request, string $playlistId, MusicService $musicService) : JsonResponse
++    protected function store(Request $request, string $playlistId, MusicService $musicService) : JsonResponse
+     {
+         if (!$this->isValidPlaylist($playlistId)) {
+             return \response()->json([], 404);
+
+
+27) /home/can/code/guessong/app/Http/Controllers/GameController.php:41    [M] IncrementInteger
+
+--- Original
++++ New
+@@ @@
+         if (!$this->isValidPlaylist($playlistId)) {
+             return \response()->json([], 404);
+         }
+-        $gameTracks = $musicService->getPlaylistTracks($musicService->getUserPlaylist($request->spotify_id, $playlistId))->shuffle()->take(4);
++        $gameTracks = $musicService->getPlaylistTracks($musicService->getUserPlaylist($request->spotify_id, $playlistId))->shuffle()->take(5);
+         /** @var Track $answer */
+         $answer = $gameTracks->random();
+         $this->setGameSession($answer->getId());
+
+
+28) /home/can/code/guessong/app/Http/Controllers/GameController.php:41    [M] DecrementInteger
+
+--- Original
++++ New
+@@ @@
+         if (!$this->isValidPlaylist($playlistId)) {
+             return \response()->json([], 404);
+         }
+-        $gameTracks = $musicService->getPlaylistTracks($musicService->getUserPlaylist($request->spotify_id, $playlistId))->shuffle()->take(4);
++        $gameTracks = $musicService->getPlaylistTracks($musicService->getUserPlaylist($request->spotify_id, $playlistId))->shuffle()->take(3);
+         /** @var Track $answer */
+         $answer = $gameTracks->random();
+         $this->setGameSession($answer->getId());
+
+
+29) /home/can/code/guessong/app/Http/Controllers/GameController.php:65    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+     private function setGameSession($answer) : void
+     {
+         \session(['answer' => $answer, 'last_game_answer_time' => \now()->timestamp]);
+-        \session()->push('recently_played_tracks', $answer);
++        
+     }
+ }
+
+
+30) /home/can/code/guessong/app/Http/Controllers/PlaylistController.php:10    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+ use Illuminate\View\View;
+ class PlaylistController extends Controller
+ {
+-    public function index($category, MusicService $spotify) : View
++    protected function index($category, MusicService $spotify) : View
+     {
+         $playlists = $spotify->getCategoryPlaylists($category);
+         $playlistCounts = \auth()->user() ? \auth()->user()->getPlayedPlaylistCounts() : [];
+
+
+31) /home/can/code/guessong/app/Http/Controllers/ScoreboardController.php:11    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+ use Illuminate\Http\Request;
+ class ScoreboardController extends Controller
+ {
+-    public function index(Request $request)
++    protected function index(Request $request)
+     {
+         $games = Game::with('user')->withTotalScore()->paginate();
+         return \view('scoreboard.index', ['games' => $games]);
+     }
+
+32) /home/can/code/guessong/app/Http/Middleware/DetermineSpotifyUserId.php:35    [M] ProtectedVisibility
+
+--- Original
++++ New
+@@ @@
+         $request->merge(['spotify_id' => $spotifyId]);
+         return $next($request);
+     }
+-    protected function isUserGame(Request $request) : bool
++    private function isUserGame(Request $request) : bool
+     {
+         return \starts_with($request->route()->getName(), 'usergame');
+     }
+ }
+
+33) /home/can/code/guessong/app/Playlist.php:76    [M] IdenticalEqual
+
+--- Original
++++ New
+@@ @@
+      */
+     public static function createFromSpotifyData(array $data) : ?Playlist
+     {
+-        if (null === $data['name'] || empty($data['images'])) {
++        if (null == $data['name'] || empty($data['images'])) {
+             return null;
+         }
+         return new self($data['id'], $data['name'], $data['owner']['id'], $data['images'][0]['url']);
+
+
+34) /home/can/code/guessong/app/Playlist.php:76    [M] LogicalOr
+
+--- Original
++++ New
+@@ @@
+      */
+     public static function createFromSpotifyData(array $data) : ?Playlist
+     {
+-        if (null === $data['name'] || empty($data['images'])) {
++        if (null === $data['name'] && empty($data['images'])) {
+             return null;
+         }
+         return new self($data['id'], $data['name'], $data['owner']['id'], $data['images'][0]['url']);
+
+
+35) /home/can/code/guessong/app/Track.php:48    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+     /**
+      * @return string
+      */
+-    public function getName() : string
++    protected function getName() : string
+     {
+         return $this->name;
+     }
+
+
+36) /home/can/code/guessong/app/Track.php:56    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+     /**
+      * @return string
+      */
+-    public function getArtistNames() : string
++    protected function getArtistNames() : string
+     {
+         return \collect($this->artists)->implode('name', ', ');
+     }
+
+
+37) /home/can/code/guessong/app/Track.php:90    [M] NotIdenticalNotEqual
+
+--- Original
++++ New
+@@ @@
+     }
+     private static function isInvalidTrackData(array $data) : bool
+     {
+-        return empty($data['artists']) || empty($data['preview_url']) || 'track' !== $data['type'];
++        return empty($data['artists']) || empty($data['preview_url']) || 'track' != $data['type'];
+     }
+     /**
+      * Convert the object to its JSON representation.
+
+
+38) /home/can/code/guessong/app/Track.php:100    [M] OneZeroInteger
+
+--- Original
++++ New
+@@ @@
+      *
+      * @return string
+      */
+-    public function toJson($options = 0) : string
++    public function toJson($options = 1) : string
+     {
+         return \json_encode(['id' => $this->getId(), 'name' => $this->getName(), 'artists' => $this->getArtistNames(), 'preview_url' => $this->getPreviewUrl()], $options);
+     }
+ }
+
+39) /home/can/code/guessong/app/Track.php:100    [M] DecrementInteger
+
+--- Original
++++ New
+@@ @@
+      *
+      * @return string
+      */
+-    public function toJson($options = 0) : string
++    public function toJson($options = -1) : string
+     {
+         return \json_encode(['id' => $this->getId(), 'name' => $this->getName(), 'artists' => $this->getArtistNames(), 'preview_url' => $this->getPreviewUrl()], $options);
+     }
+ }
+
+40) /home/can/code/guessong/app/Track.php:103    [M] ArrayItem
+
+--- Original
++++ New
+@@ @@
+      */
+     public function toJson($options = 0) : string
+     {
+-        return \json_encode(['id' => $this->getId(), 'name' => $this->getName(), 'artists' => $this->getArtistNames(), 'preview_url' => $this->getPreviewUrl()], $options);
++        return \json_encode(['id' > $this->getId(), 'name' => $this->getName(), 'artists' => $this->getArtistNames(), 'preview_url' => $this->getPreviewUrl()], $options);
+     }
+ }
+
+
+41) /home/can/code/guessong/app/Track.php:104    [M] ArrayItem
+
+--- Original
++++ New
+@@ @@
+      */
+     public function toJson($options = 0) : string
+     {
+-        return \json_encode(['id' => $this->getId(), 'name' => $this->getName(), 'artists' => $this->getArtistNames(), 'preview_url' => $this->getPreviewUrl()], $options);
++        return \json_encode(['id' => $this->getId(), 'name' > $this->getName(), 'artists' => $this->getArtistNames(), 'preview_url' => $this->getPreviewUrl()], $options);
+     }
+ }
+
+
+42) /home/can/code/guessong/app/Track.php:105    [M] ArrayItem
+
+--- Original
++++ New
+@@ @@
+      */
+     public function toJson($options = 0) : string
+     {
+-        return \json_encode(['id' => $this->getId(), 'name' => $this->getName(), 'artists' => $this->getArtistNames(), 'preview_url' => $this->getPreviewUrl()], $options);
++        return \json_encode(['id' => $this->getId(), 'name' => $this->getName(), 'artists' > $this->getArtistNames(), 'preview_url' => $this->getPreviewUrl()], $options);
+     }
+ }
+
+
+43) /home/can/code/guessong/app/Track.php:106    [M] ArrayItem
+
+--- Original
++++ New
+@@ @@
+      */
+     public function toJson($options = 0) : string
+     {
+-        return \json_encode(['id' => $this->getId(), 'name' => $this->getName(), 'artists' => $this->getArtistNames(), 'preview_url' => $this->getPreviewUrl()], $options);
++        return \json_encode(['id' => $this->getId(), 'name' => $this->getName(), 'artists' => $this->getArtistNames(), 'preview_url' > $this->getPreviewUrl()], $options);
+     }
+ }
+
+
+44) /home/can/code/guessong/app/User.php:33    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+      * @var array
+      */
+     protected $hidden = ['password', 'remember_token'];
+-    public function games()
++    protected function games()
+     {
+         return $this->hasMany(Game::class);
+     }
+
+
+45) /home/can/code/guessong/app/User.php:49    [M] DecrementInteger
+
+--- Original
++++ New
+@@ @@
+         $now = \now()->timestamp;
+         $timeDiff = $now - $lastAnswerTime;
+         // Timeout
+-        if ($timeDiff > 30) {
++        if ($timeDiff > 29) {
+             return $this;
+         }
+         $score = (30 - $timeDiff) * 5;
+
+
+46) /home/can/code/guessong/app/User.php:49    [M] GreaterThan
+
+--- Original
++++ New
+@@ @@
+         $now = \now()->timestamp;
+         $timeDiff = $now - $lastAnswerTime;
+         // Timeout
+-        if ($timeDiff > 30) {
++        if ($timeDiff >= 30) {
+             return $this;
+         }
+         $score = (30 - $timeDiff) * 5;
+
+Timed Out mutants:
+==================
+
+Not Covered mutants:
+====================
+
+
+1) /home/can/code/guessong/app/Http/Controllers/Auth/ForgotPasswordController.php:28    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+      */
+     public function __construct()
+     {
+-        $this->middleware('guest');
++        
+     }
+ }
+
+
+2) /home/can/code/guessong/app/Http/Controllers/Auth/ResetPasswordController.php:35    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+      */
+     public function __construct()
+     {
+-        $this->middleware('guest');
++        
+     }
+ }
+
+
+3) /home/can/code/guessong/app/Http/Controllers/Controller.php:20    [M] ProtectedVisibility
+
+--- Original
++++ New
+@@ @@
+     {
+         return \session('current_playlist') === $playlistId;
+     }
+-    protected function isUserGame(Request $request) : bool
++    private function isUserGame(Request $request) : bool
+     {
+         return \starts_with($request->route()->getName(), 'usergame');
+     }
+ }
+
+4) /home/can/code/guessong/app/Http/Controllers/GameAnswerController.php:66    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+      */
+     private function gameFinished() : JsonResponse
+     {
+-        \session()->forget(['answer', 'current_playlist', 'last_game_answer_time', 'recently_played_tracks']);
++        
+         return \response()->json(['message' => 'finished']);
+     }
+ }
+
+
+5) /home/can/code/guessong/app/Http/Controllers/UserPlaylistController.php:9    [M] PublicVisibility
+
+--- Original
++++ New
+@@ @@
+ use App\Services\MusicService;
+ class UserPlaylistController extends Controller
+ {
+-    public function index(MusicService $musicService)
++    protected function index(MusicService $musicService)
+     {
+         $playlists = $musicService->getUserPlaylists();
+         $playlistCounts = \auth()->user()->getPlayedPlaylistCounts();
+
+
+6) /home/can/code/guessong/app/Http/Middleware/RedirectIfAuthenticated.php:22    [M] FunctionCall
+
+--- Original
++++ New
+@@ @@
+     public function handle($request, Closure $next, $guard = null)
+     {
+         if (Auth::guard($guard)->check()) {
+-            return redirect('/categories');
++            redirect('/categories');
++            return null;
+         }
+         return $next($request);
+     }
+
+7) /home/can/code/guessong/app/Playlist.php:95    [M] OneZeroInteger
+
+--- Original
++++ New
+@@ @@
+      *
+      * @return string
+      */
+-    public function toJson($options = 0) : string
++    public function toJson($options = 1) : string
+     {
+         return \json_encode(['id' => $this->getId(), 'name' => $this->getName()], $options);
+     }
+ }
+
+8) /home/can/code/guessong/app/Playlist.php:95    [M] DecrementInteger
+
+--- Original
++++ New
+@@ @@
+      *
+      * @return string
+      */
+-    public function toJson($options = 0) : string
++    public function toJson($options = -1) : string
+     {
+         return \json_encode(['id' => $this->getId(), 'name' => $this->getName()], $options);
+     }
+ }
+
+9) /home/can/code/guessong/app/Playlist.php:98    [M] ArrayItem
+
+--- Original
++++ New
+@@ @@
+      */
+     public function toJson($options = 0) : string
+     {
+-        return \json_encode(['id' => $this->getId(), 'name' => $this->getName()], $options);
++        return \json_encode(['id' > $this->getId(), 'name' => $this->getName()], $options);
+     }
+ }
+
+
+10) /home/can/code/guessong/app/Playlist.php:99    [M] ArrayItem
+
+--- Original
++++ New
+@@ @@
+      */
+     public function toJson($options = 0) : string
+     {
+-        return \json_encode(['id' => $this->getId(), 'name' => $this->getName()], $options);
++        return \json_encode(['id' => $this->getId(), 'name' > $this->getName()], $options);
+     }
+ }
+
+
+11) /home/can/code/guessong/app/Services/Spotify.php:27    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+     public function __construct($accessToken, $refreshToken)
+     {
+         $api = new SpotifyWebAPI();
+-        $api->setAccessToken($accessToken);
++        
+         $api->setReturnType(SpotifyWebAPI::RETURN_ASSOC);
+         $this->api = $api;
+         $this->refreshToken = $refreshToken;
+
+
+12) /home/can/code/guessong/app/Services/Spotify.php:28    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+     {
+         $api = new SpotifyWebAPI();
+         $api->setAccessToken($accessToken);
+-        $api->setReturnType(SpotifyWebAPI::RETURN_ASSOC);
++        
+         $this->api = $api;
+         $this->refreshToken = $refreshToken;
+     }
+
+
+13) /home/can/code/guessong/app/Services/Spotify.php:43    [M] OneZeroInteger
+
+--- Original
++++ New
+@@ @@
+     public function getPlaylistCategoriesForGame()
+     {
+         return $this->callWithErrorHandling(function () {
+-            return $this->api->getCategoriesList(['offset' => 0, 'limit' => 50])['categories']['items'];
++            return $this->api->getCategoriesList(['offset' => 1, 'limit' => 50])['categories']['items'];
+         });
+     }
+     /**
+
+
+14) /home/can/code/guessong/app/Services/Spotify.php:43    [M] DecrementInteger
+
+--- Original
++++ New
+@@ @@
+     public function getPlaylistCategoriesForGame()
+     {
+         return $this->callWithErrorHandling(function () {
+-            return $this->api->getCategoriesList(['offset' => 0, 'limit' => 50])['categories']['items'];
++            return $this->api->getCategoriesList(['offset' => -1, 'limit' => 50])['categories']['items'];
+         });
+     }
+     /**
+
+
+15) /home/can/code/guessong/app/Services/Spotify.php:44    [M] IncrementInteger
+
+--- Original
++++ New
+@@ @@
+     public function getPlaylistCategoriesForGame()
+     {
+         return $this->callWithErrorHandling(function () {
+-            return $this->api->getCategoriesList(['offset' => 0, 'limit' => 50])['categories']['items'];
++            return $this->api->getCategoriesList(['offset' => 0, 'limit' => 51])['categories']['items'];
+         });
+     }
+     /**
+
+
+16) /home/can/code/guessong/app/Services/Spotify.php:44    [M] DecrementInteger
+
+--- Original
++++ New
+@@ @@
+     public function getPlaylistCategoriesForGame()
+     {
+         return $this->callWithErrorHandling(function () {
+-            return $this->api->getCategoriesList(['offset' => 0, 'limit' => 50])['categories']['items'];
++            return $this->api->getCategoriesList(['offset' => 0, 'limit' => 49])['categories']['items'];
+         });
+     }
+     /**
+
+
+17) /home/can/code/guessong/app/Services/Spotify.php:81    [M] ArrayItem
+
+--- Original
++++ New
+@@ @@
+             return \collect($this->api->getUserPlaylistTracks($playlist->getOwnerId(), $playlist->getId())['items'])->map(function ($track) {
+                 return Track::createFromSpotifyData($track['track']);
+             })->filter()->mapWithKeys(function (Track $track) {
+-                return [$track->getId() => $track];
++                return [$track->getId() > $track];
+             });
+         });
+     }
+
+
+18) /home/can/code/guessong/app/Services/Spotify.php:111    [M] Identical
+
+--- Original
++++ New
+@@ @@
+     public function getUserPlaylists(string $userId = 'me') : Collection
+     {
+         return $this->callWithErrorHandling(function () use($userId) {
+-            $playlists = 'me' === $userId ? $this->api->getMyPlaylists() : $this->api->getUserPlaylists($userId);
++            $playlists = 'me' !== $userId ? $this->api->getMyPlaylists() : $this->api->getUserPlaylists($userId);
+             return \collect($playlists['items'])->map(function ($playlist) {
+                 return Playlist::createFromSpotifyData($playlist);
+             })->filter();
+
+
+19) /home/can/code/guessong/app/Services/Spotify.php:111    [M] IdenticalEqual
+
+--- Original
++++ New
+@@ @@
+     public function getUserPlaylists(string $userId = 'me') : Collection
+     {
+         return $this->callWithErrorHandling(function () use($userId) {
+-            $playlists = 'me' === $userId ? $this->api->getMyPlaylists() : $this->api->getUserPlaylists($userId);
++            $playlists = 'me' == $userId ? $this->api->getMyPlaylists() : $this->api->getUserPlaylists($userId);
+             return \collect($playlists['items'])->map(function ($playlist) {
+                 return Playlist::createFromSpotifyData($playlist);
+             })->filter();
+
+
+20) /home/can/code/guessong/app/Services/Spotify.php:128    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+         $session = new SpotifySession(env('SPOTIFY_CLIENT_ID'), env('SPOTIFY_CLIENT_SECRET'));
+         $success = $this->refreshToken ? $session->refreshAccessToken($this->refreshToken) : $session->requestCredentialsToken();
+         if ($success) {
+-            $this->api->setAccessToken($session->getAccessToken());
++            
+             return ['access_token' => $session->getAccessToken(), 'refresh_token' => $session->getRefreshToken() ?? $this->refreshToken];
+         }
+         return false;
+
+
+21) /home/can/code/guessong/app/Services/Spotify.php:131    [M] ArrayItem
+
+--- Original
++++ New
+@@ @@
+         $success = $this->refreshToken ? $session->refreshAccessToken($this->refreshToken) : $session->requestCredentialsToken();
+         if ($success) {
+             $this->api->setAccessToken($session->getAccessToken());
+-            return ['access_token' => $session->getAccessToken(), 'refresh_token' => $session->getRefreshToken() ?? $this->refreshToken];
++            return ['access_token' > $session->getAccessToken(), 'refresh_token' => $session->getRefreshToken() ?? $this->refreshToken];
+         }
+         return false;
+     }
+
+
+22) /home/can/code/guessong/app/Services/Spotify.php:132    [M] Coalesce
+
+--- Original
++++ New
+@@ @@
+         $success = $this->refreshToken ? $session->refreshAccessToken($this->refreshToken) : $session->requestCredentialsToken();
+         if ($success) {
+             $this->api->setAccessToken($session->getAccessToken());
+-            return ['access_token' => $session->getAccessToken(), 'refresh_token' => $session->getRefreshToken() ?? $this->refreshToken];
++            return ['access_token' => $session->getAccessToken(), 'refresh_token' => $this->refreshToken];
+         }
+         return false;
+     }
+
+
+23) /home/can/code/guessong/app/Services/Spotify.php:136    [M] FalseValue
+
+--- Original
++++ New
+@@ @@
+             $this->api->setAccessToken($session->getAccessToken());
+             return ['access_token' => $session->getAccessToken(), 'refresh_token' => $session->getRefreshToken() ?? $this->refreshToken];
+         }
+-        return false;
++        return true;
+     }
+     private function callWithErrorHandling(\Closure $callback)
+     {
+
+
+24) /home/can/code/guessong/app/Services/Spotify.php:149    [M] LogicalAnd
+
+--- Original
++++ New
+@@ @@
+         } catch (SpotifyWebAPIException $e) {
+             if (\str_contains($e->getMessage(), 'expired')) {
+                 $updatedTokens = $this->refreshUserAccessToken();
+-                if ($updatedTokens && $this->refreshToken) {
++                if ($updatedTokens || $this->refreshToken) {
+                     auth()->user()->socialLogin->update(['spotify_token' => $updatedTokens['access_token'], 'spotify_refresh_token' => $updatedTokens['refresh_token']]);
+                 }
+                 // Retry
+
+
+25) /home/can/code/guessong/app/Services/Spotify.php:150    [M] MethodCallRemoval
+
+--- Original
++++ New
+@@ @@
+             if (\str_contains($e->getMessage(), 'expired')) {
+                 $updatedTokens = $this->refreshUserAccessToken();
+                 if ($updatedTokens && $this->refreshToken) {
+-                    auth()->user()->socialLogin->update(['spotify_token' => $updatedTokens['access_token'], 'spotify_refresh_token' => $updatedTokens['refresh_token']]);
++                    
+                 }
+                 // Retry
+                 return $callback();
+
+
+26) /home/can/code/guessong/app/Services/Spotify.php:157    [M] FunctionCall
+
+--- Original
++++ New
+@@ @@
+                 if ($updatedTokens && $this->refreshToken) {
+                     auth()->user()->socialLogin->update(['spotify_token' => $updatedTokens['access_token'], 'spotify_refresh_token' => $updatedTokens['refresh_token']]);
+                 }
+-                // Retry
+-                return $callback();
++                $callback();
++                return null;
+             }
+             throw $e;
+
+27) /home/can/code/guessong/app/Services/Spotify.php:160    [M] Throw_
+
+--- Original
++++ New
+@@ @@
+                 // Retry
+                 return $callback();
+             }
+-            throw $e;
++            $e;
+         }
+         return $return;
+     }
+ }

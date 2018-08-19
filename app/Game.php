@@ -5,6 +5,14 @@ namespace App;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Game
+ *
+ * @property-read \App\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Game lastGameWithPlaylistId($playlistId)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Game withTotalScore()
+ * @mixin \Eloquent
+ */
 class Game extends Model
 {
     protected $guarded = [];

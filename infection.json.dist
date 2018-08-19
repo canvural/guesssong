@@ -1,0 +1,14 @@
+{
+    "timeout": 15,
+    "source": {
+        "directories": [
+            "app"
+        ],
+        "excludes": [
+            "Providers"
+        ]
+    },
+    "logs": {
+        "text": "storage\/infection-log.txt"
+    }
+}
