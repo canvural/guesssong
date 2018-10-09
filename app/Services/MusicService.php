@@ -11,7 +11,7 @@ interface MusicService
 
     public function getPlaylistTracks(Playlist $playlist): Collection;
 
-    public function getUserPlaylist(string $userId, string $playlistId): Playlist;
+    public function getPlaylist(string $playlistId): Playlist;
 
     public function getUserPlaylists(string $userId = 'me'): Collection;
 

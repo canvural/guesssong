@@ -15,7 +15,7 @@ class GameAnswerController extends Controller
             return \response()->json([], 404);
         }
 
-        $playlist = $musicService->getUserPlaylist($request->spotify_id, $playlistId);
+        $playlist = $musicService->getPlaylist($playlistId);
         $allTracks = $musicService->getPlaylistTracks($playlist);
         $notPlayedTracks = $allTracks->reject(function (Track $track) {
             return \collect(\session('recently_played_tracks'))->contains($track->getId());

@@ -65,13 +65,12 @@ class Track implements Jsonable
     {
         return $this->previewUrl;
     }
-
+    
     /**
-     * @param array $data
-     *
+     * @param array|null $data
      * @return Track|null
      */
-    public static function createFromSpotifyData(array $data): ?Track
+    public static function createFromSpotifyData(?array $data): ?Track
     {
         if (self::isInvalidTrackData($data)) {
             return null;

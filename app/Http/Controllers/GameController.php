@@ -12,7 +12,7 @@ class GameController extends Controller
 {
     public function create(Request $request, string $playlistId, MusicService $musicService): View
     {
-        $playlist = $musicService->getUserPlaylist($request->spotify_id, $playlistId);
+        $playlist = $musicService->getPlaylist($playlistId);
 
         \session(['current_playlist' => $playlist->getId()]);
 
@@ -37,7 +37,7 @@ class GameController extends Controller
         }
 
         $gameTracks = $musicService->getPlaylistTracks(
-            $musicService->getUserPlaylist($request->spotify_id, $playlistId)
+            $musicService->getPlaylist($playlistId)
         )->shuffle()->take(4);
 
         /** @var Track $answer */

@@ -48,21 +48,20 @@ class CachingSpotify implements MusicService
     }
 
     /**
-     * @param string $userId
      * @param string $playlistId
      *
      * @throws \BadMethodCallException
      *
      * @return Playlist
      */
-    public function getUserPlaylist(string $userId, string $playlistId): Playlist
+    public function getPlaylist(string $playlistId): Playlist
     {
         return $this->cache
             ->tags(
-                ['playlists', $userId.'_playlists', $playlistId]
+                ['playlists', $playlistId]
             )
-            ->remember($userId.'_'.$playlistId, self::DEFAULT_CACHING_MINUTES, function () use ($userId, $playlistId) {
-                return $this->spotify->getUserPlaylist($userId, $playlistId);
+            ->remember($playlistId, self::DEFAULT_CACHING_MINUTES, function () use ($playlistId) {
+                return $this->spotify->getPlaylist($playlistId);
             });
     }
 

@@ -74,7 +74,7 @@ class Spotify implements MusicService
     {
         return $this->callWithErrorHandling(function () use ($playlist) {
             return \collect(
-                $this->api->getUserPlaylistTracks($playlist->getOwnerId(), $playlist->getId())['items']
+                $this->api->getPlaylistTracks($playlist->getId())['items']
             )->map(function ($track) {
                 return Track::createFromSpotifyData($track['track']);
             })->filter()->mapWithKeys(function (Track $track) {
@@ -84,17 +84,16 @@ class Spotify implements MusicService
     }
 
     /**
-     * @param string $userId
      * @param string $playlistId
      *
      * @throws SpotifyWebAPIException
      *
      * @return Playlist
      */
-    public function getUserPlaylist(string $userId, string $playlistId): Playlist
+    public function getPlaylist(string $playlistId): Playlist
     {
-        return $this->callWithErrorHandling(function () use ($userId, $playlistId) {
-            return Playlist::createFromSpotifyData($this->api->getUserPlaylist($userId, $playlistId));
+        return $this->callWithErrorHandling(function () use ($playlistId) {
+            return Playlist::createFromSpotifyData($this->api->getPlaylist($playlistId));
         });
     }
 

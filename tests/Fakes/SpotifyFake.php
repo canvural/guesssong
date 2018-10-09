@@ -60,14 +60,13 @@ class SpotifyFake implements MusicService
     }
 
     /**
-     * @param string $userId
      * @param string $playlistId
      *
      * @throws SpotifyWebAPIException
      *
      * @return Playlist
      */
-    public function getUserPlaylist(string $userId, string $playlistId): Playlist
+    public function getPlaylist(string $playlistId): Playlist
     {
         $playlist = Playlist::createFromSpotifyData(get_playlist('rock-hard'));
 
